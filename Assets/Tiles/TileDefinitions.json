@@ -1,0 +1,23 @@
+{
+    "GRASS": {
+        "friendly_name": "Grass",
+
+        "GRASS_01": {
+            "name":  "grass",
+            "texture": "tiles/grass_01",
+            "walkable": true
+        },
+
+        "GRASS_02": {
+            "name": "grass",
+            "texture": "tiles/grass_01",
+            "walkable": true
+        },
+
+        "GRASS_03": {
+            "name": "grass",
+            "texture": "tiles/grass_01",
+            "walkable": true
+        }
+    }
+}

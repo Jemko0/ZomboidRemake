@@ -18,9 +18,22 @@ namespace Iso.Engine.Core.Rendering
             this.zoom = zoom;
         }
 
+        public IsoCamera()
+        {
+            position = new FVector3(0.0f, 0.0f, 0.0f);
+            zoom = 1.0f;
+        }
+
         public void SetPosition(FVector3 position)
         {
             this.position = position;
+        }
+
+        public void Translate(FVector3 delta)
+        {
+            this.position.x += delta.x;
+            this.position.y += delta.y;
+            this.position.z += delta.z;
         }
 
         public FVector3 GetPosition()

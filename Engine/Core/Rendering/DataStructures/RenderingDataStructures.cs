@@ -38,6 +38,13 @@ namespace Iso.Engine.Core.Rendering.DataStructures
             return this;
         }
 
+        public IsoRenderContextBuilder WithExtra(string key, object? extra)
+        {
+            renderContext.extras[key] = extra;
+
+            return this;
+        }
+
         public IsoRenderContext Build()
         {
             return renderContext;

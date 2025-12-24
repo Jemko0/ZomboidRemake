@@ -15,6 +15,12 @@
 		<PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.1.303" />
 		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
 	</ItemGroup>
+	
+	<ItemGroup>
+		<Content Include="Assets\Tiles\TileDefinitions.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
 	<Target Name="RestoreDotnetTools" BeforeTargets="CollectPackageReferences">
 		<Message Text="Restoring dotnet tools..." Importance="High" />
