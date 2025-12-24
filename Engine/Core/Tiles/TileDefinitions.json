@@ -1,0 +1,18 @@
+{
+    "GRASS": {
+        "GRASS_01": {
+            "texture_fp": "tiles/grass_01.png",
+            "walkable":  true
+        },
+
+        "GRASS_02": {
+            "texture_fp": "tiles/grass_02.png",
+            "walkable": true
+        },
+
+        "GRASS_03": {
+            "texture_fp": "tiles/grass_03.png",
+            "walkable": true
+        }
+    }
+}
