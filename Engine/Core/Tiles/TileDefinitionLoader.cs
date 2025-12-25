@@ -7,6 +7,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Iso.Engine.Core.Assets;
+using Iso.Engine.Core.Logging;
 
 namespace Iso.Engine.Core.Tiles
 {
@@ -30,9 +31,14 @@ namespace Iso.Engine.Core.Tiles
 
     public class TileDefinitionData
     {
+        public TileDefinitionData()
+        {
+            flags = new HashSet<string>();
+        }
+
         public string name { get; set; }
         public string texture { get; set; }
-        public bool walkable { get; set; }
+        public HashSet<string> flags { get; set; }
 
         public Texture2D tileTexture;
     }
@@ -40,10 +46,8 @@ namespace Iso.Engine.Core.Tiles
 
     public class TileDefinitionLoader
     {
-        public static ContentManager contentManager;
-        public TileDefinitionLoader(ref ContentManager manager) 
+        public TileDefinitionLoader()
         {
-            contentManager = manager;
         }
 
         public static string workingDir = AppContext.BaseDirectory;
@@ -74,10 +78,8 @@ namespace Iso.Engine.Core.Tiles
                     // Convert key -> enum
                     if (!Enum.TryParse<ETileType>(prop.Name, out var tileType))
                     {
-                        return new TileDefLoadResult(
-                            false,
-                            $"Unknown tile type '{prop.Name}' in JSON."
-                        );
+                        IsoLog.Log("LogTileDefinitionLoader", $"Unknown tile type '{prop.Name}' in JSON << Ignoring Tile Definition", ELogVerbosity.Warning);
+                        continue;
                     }
 
                     var tileData = prop.Value.Deserialize<TileDefinitionData>();
@@ -90,7 +92,7 @@ namespace Iso.Engine.Core.Tiles
                         );
                     }
 
-                    TileDefinitions.AddDefinition(tileType, tileData, contentManager);
+                    TileDefinitions.AddDefinition(tileType, tileData);
                 }
             }
 
@@ -102,9 +104,18 @@ namespace Iso.Engine.Core.Tiles
     {
         public static Dictionary<ETileType, TileDefinitionData> definitions = new();
 
-        public static void AddDefinition(ETileType type, TileDefinitionData data, ContentManager cm)
+        public static void AddDefinition(ETileType type, TileDefinitionData data)
         {
-            Texture2D texture = cm.Load<Texture2D>(data.texture);
+            Texture2D texture = null;
+            try
+            {
+                texture = AssetHelper.globalContentManager.Load<Texture2D>(data.texture);
+            }
+            catch (Exception e)
+            {
+                IsoLog.Log("LogTileDefinitionLoader", string.Format("Caught Exception: {0}", e.Message), ELogVerbosity.Debug);
+                texture = AssetHelper.globalContentManager.Load<Texture2D>("tiles/missing");
+            }
             data.tileTexture = texture;
 
             definitions[type] = data;

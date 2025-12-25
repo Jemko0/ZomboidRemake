@@ -13,24 +13,53 @@ namespace Iso.Engine.Core.Rendering
         public static GameWindow window;
         public static Vector2 WorldToScreen(FVector3 pos, float tileWidth, float tileHeight, IsoCamera camera)
         {
-            float screenX = (pos.x - pos.y) * (tileWidth / 2f) - camera.GetPosition().x;
-            float screenY = (pos.x + pos.y) * (tileHeight / 2f) - (pos.z * tileHeight / 2f) - camera.GetPosition().y - camera.GetPosition().z;
+            var camPos = camera.GetPosition();
 
-            //apply zoom
-            screenX *= camera.GetZoom();
-            screenY *= camera.GetZoom();
+            float isoX = (pos.x - pos.y) * (tileWidth / 2f);
+            float isoY = (pos.x + pos.y) * (tileHeight / 2f) - (pos.z * tileHeight / 2f);
 
-            //apply dpi
-            float dpiScale = GetDPIScale();
-            screenX *= dpiScale;
-            screenY *= dpiScale;
+            isoX -= camPos.x;
+            isoY -= camPos.y - camPos.z;
 
-            //center to screen
+            float scale = camera.GetZoom() * GetDPIScale();
+            float screenX = isoX * scale;
+            float screenY = isoY * scale;
+
             screenX += window.ClientBounds.Width / 2f;
             screenY += window.ClientBounds.Height / 2f;
 
             return new Vector2(screenX, screenY);
         }
+
+        public static Vector2 ScreenToWorld(
+            Vector2 screen,
+            float tileWidth,
+            float tileHeight,
+            IsoCamera camera)
+        {
+            float x = screen.X - window.ClientBounds.Width / 2f;
+            float y = screen.Y - window.ClientBounds.Height / 2f;
+
+            float dpi = GetDPIScale();
+            x /= dpi;
+            y /= dpi;
+
+            float zoom = camera.GetZoom();
+            x /= zoom;
+            y /= zoom;
+
+            x += camera.GetPosition().x;
+            y += camera.GetPosition().y + camera.GetPosition().z;
+
+            float halfW = tileWidth / 2f;
+            float halfH = tileHeight / 2f;
+
+            float worldX = (x / halfW + y / halfH) / 2f;
+            float worldY = (y / halfH - x / halfW) / 2f;
+
+            return new Vector2(worldX, worldY);
+        }
+
 
         public static float GetOnScreenSize(float originalSize)
         {

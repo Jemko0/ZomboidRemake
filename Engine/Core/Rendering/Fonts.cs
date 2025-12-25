@@ -9,11 +9,13 @@ namespace Iso.Engine.Core.Rendering
         public static ContentManager cnt;
 
         public static SpriteFont arial { get; private set; }
+        public static SpriteFont monospace { get; private set; }
 
         public static void SetupFonts(ContentManager cntmgr)
         {
             cnt = cntmgr;
             arial = cnt.Load<SpriteFont>("fonts/arial");
+            monospace = cnt.Load<SpriteFont>("fonts/monospace");
         }
         
     }

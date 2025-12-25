@@ -20,6 +20,7 @@ namespace Iso.Engine.Core
         protected string mapFilePath = "";
 
         public IsoCamera activeCamera;
+        public IsoRenderContext isoRenderContext = null;
         public virtual void Init()
         {
             
@@ -29,12 +30,17 @@ namespace Iso.Engine.Core
         {
         }
 
-        public virtual void Render(ref Microsoft.Xna.Framework.GraphicsDeviceManager gdm, ref SpriteBatch sb)
+        public virtual void SetRenderContext()
         {
-            IsoRenderContext isoRenderContext = new IsoRenderContextBuilder()
+            isoRenderContext = new IsoRenderContextBuilder()
                                                         .WithCamera(activeCamera)
                                                         .WithExtra("debug", true)
                                                         .Build();
+        }
+
+        public virtual void Render(ref Microsoft.Xna.Framework.GraphicsDeviceManager gdm, ref SpriteBatch sb)
+        {
+            SetRenderContext();
 
             if(tilemap == null)
             {

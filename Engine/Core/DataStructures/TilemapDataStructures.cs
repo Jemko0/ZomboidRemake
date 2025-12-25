@@ -10,30 +10,45 @@ namespace Iso.Engine.Core.DataStructures
     {
         NONE = 0,
 
-        GRASS_01 = 100,
-        GRASS_02,
-        GRASS_03,
+        F_DEBUG,
+        W_DEBUG,
 
-        DIRT_01 = 200,
+        F_GRASS_01,
     }
 
-    public struct FTileData
+    public class SquareTileData
     {
-        public FTileData()
+        public List<TileObject> objects;
+
+        public SquareTileData()
         {
-            type = ETileType.NONE;
+            objects = new List<TileObject>();
         }
 
-        public FTileData(ETileType type)
+        public SquareTileData(List<TileObject> initializerList)
+        {
+            objects = initializerList;
+        }
+
+        public void AddObject(TileObject obj)
+        {
+            objects.Add(obj);
+        }
+
+        public void RemoveObject(TileObject obj)
+        {
+            objects.Remove(obj);
+        }
+    }
+
+    public class TileObject
+    {
+        public ETileType type;
+        public bool rotated = false;
+
+        public TileObject(ETileType type)
         {
             this.type = type;
         }
-
-        public ETileType type;
-
-        public bool IsNone()
-        {
-            return type == ETileType.NONE;
-        }
     }
-}
+} 

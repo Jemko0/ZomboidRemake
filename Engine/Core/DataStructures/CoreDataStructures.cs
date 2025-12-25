@@ -48,6 +48,11 @@ namespace Iso.Engine.Core.DataStructures
         {
             return new IntVector3(a.x - b.x, a.y - b.y, a.z - b.z);
         }
+
+        public FVector3 ToFVector3()
+        {
+            return new FVector3(x, y, z);
+        }
     }
 
     public struct FVector3
@@ -77,6 +82,11 @@ namespace Iso.Engine.Core.DataStructures
             return new FVector3(a.x * scalar, a.y * scalar, a.z * scalar);
         }
 
+        public static FVector3 operator *(FVector3 a, double scalar)
+        {
+            return new FVector3(a.x * (float)scalar, a.y * (float)scalar, a.z * (float)scalar);
+        }
+
         public static FVector3 operator /(FVector3 a, FVector3 b)
         {
             return new FVector3(a.x / b.x, a.y / b.y, a.z / b.z);
@@ -90,6 +100,52 @@ namespace Iso.Engine.Core.DataStructures
         public static FVector3 operator -(FVector3 a, FVector3 b)
         {
             return new FVector3(a.x - b.x, a.y - b.y, a.z - b.z);
+        }
+
+        public IntVector3 ToIntVector3()
+        {
+            return new IntVector3((int)x, (int)y, (int)z);
+        }
+    }
+
+    public struct IntVector2 : IEquatable<IntVector2>
+    {
+        public int x;
+        public int y;
+
+        public IntVector2(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+
+        public bool Equals(IntVector2 other)
+        {
+            return x == other.x && y == other.y;
+        }
+
+        public static IntVector2 operator *(IntVector2 a, IntVector2 b)
+        {
+            return new IntVector2(a.x * b.x, a.y * b.y);
+        }
+        public static IntVector2 operator *(IntVector2 a, int scalar)
+        {
+            return new IntVector2(a.x * scalar, a.y * scalar);
+        }
+
+        public static IntVector2 operator /(IntVector2 a, IntVector2 b)
+        {
+            return new IntVector2(a.x / b.x, a.y / b.y);
+        }
+
+        public static IntVector2 operator +(IntVector2 a, IntVector2 b)
+        {
+            return new IntVector2(a.x + b.x, a.y + b.y);
+        }
+
+        public static IntVector2 operator -(IntVector2 a, IntVector2 b)
+        {
+            return new IntVector2(a.x - b.x, a.y - b.y);
         }
     }
 }

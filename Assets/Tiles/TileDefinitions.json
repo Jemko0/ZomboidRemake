@@ -1,23 +1,27 @@
 {
+    "DEBUG": {
+        "friendly_name": "Debug Tiles",
+
+        "F_DEBUG": {
+            "name": "debug",
+            "texture": "tiles/debug_01",
+            "flags": [ "walkable", "floor" ]
+        },
+
+        "W_DEBUG": {
+            "name": "debug",
+            "texture": "tiles/debug_wall_01",
+            "flags": [ "wall", "solid" ]
+        }
+    },
+
     "GRASS": {
         "friendly_name": "Grass",
 
-        "GRASS_01": {
-            "name":  "grass",
-            "texture": "tiles/grass_01",
-            "walkable": true
-        },
-
-        "GRASS_02": {
+        "F_GRASS_01": {
             "name": "grass",
             "texture": "tiles/grass_01",
-            "walkable": true
-        },
-
-        "GRASS_03": {
-            "name": "grass",
-            "texture": "tiles/grass_01",
-            "walkable": true
+            "flags": ["floor", "walkable"]
         }
     }
 }

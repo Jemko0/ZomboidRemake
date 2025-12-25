@@ -1,4 +1,5 @@
 ﻿using Iso.Engine.Core;
+using Iso.Engine.Core.Assets;
 using Iso.Engine.Core.DataStructures;
 using Iso.Engine.Core.Rendering;
 using Iso.Engine.Core.Tiles;
@@ -23,6 +24,8 @@ namespace Iso
             Window.AllowUserResizing = true;
             Window.AllowAltF4 = true;
             IsMouseVisible = true;
+            IsFixedTimeStep = false;
+            graphics.SynchronizeWithVerticalRetrace = false;
         }
 
         protected override void Initialize()
@@ -31,7 +34,7 @@ namespace Iso
 
             Fonts.SetupFonts(Content);
             RenderUtil.window = Window;
-            TileDefinitionLoader.contentManager = Content;
+            AssetHelper.globalContentManager = Content;
 
             mainSceneManager = new SceneManager();
         }
@@ -45,7 +48,7 @@ namespace Iso
 
         protected override void Update(GameTime gameTime)
         {
-            double delta = gameTime.ElapsedGameTime.TotalMilliseconds;
+            double delta = gameTime.ElapsedGameTime.TotalSeconds;
 
             mainSceneManager.Update(delta);
 
@@ -56,26 +59,29 @@ namespace Iso
 
             FVector3 camDelta = new FVector3();
 
-            camDelta.x += Keyboard.GetState().IsKeyDown(Keys.D) ? 5 : 0;
-            camDelta.x += Keyboard.GetState().IsKeyDown(Keys.A) ? -5 : 0;
-            camDelta.y += Keyboard.GetState().IsKeyDown(Keys.W) ? -2.5f : 0;
-            camDelta.y += Keyboard.GetState().IsKeyDown(Keys.S) ? 2.5f : 0;
+            float camSpeed = Tilemap.TILEWIDTH * 5;
+
+            camDelta.x += Keyboard.GetState().IsKeyDown(Keys.D) ? camSpeed : 0;
+            camDelta.x += Keyboard.GetState().IsKeyDown(Keys.A) ? -camSpeed : 0;
+            camDelta.y += Keyboard.GetState().IsKeyDown(Keys.W) ? -camSpeed/2.0f : 0;
+            camDelta.y += Keyboard.GetState().IsKeyDown(Keys.S) ? camSpeed/2.0f : 0;
+
+            camDelta *= delta;
 
             float zoom = SceneManager.loadedWorld.activeCamera.GetZoom();
 
-            zoom += Keyboard.GetState().IsKeyDown(Keys.OemPlus) ? 0.02f * zoom : 0.0f;
-            zoom += Keyboard.GetState().IsKeyDown(Keys.OemMinus) ? -0.02f * zoom : 0.0f;
+            zoom += Keyboard.GetState().IsKeyDown(Keys.OemPlus) ? (float)delta * zoom : 0.0f;
+            zoom += Keyboard.GetState().IsKeyDown(Keys.OemMinus) ? (float)-delta * zoom : 0.0f;
 
             SceneManager.loadedWorld.activeCamera.Translate(camDelta);
             SceneManager.loadedWorld.activeCamera.SetZoom(zoom);
-
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             mainSceneManager.SendRenderEvent(ref graphics, ref spriteBatch);
 
