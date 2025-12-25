@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
@@ -105,6 +106,11 @@ namespace Iso.Engine.Core.DataStructures
         public IntVector3 ToIntVector3()
         {
             return new IntVector3((int)x, (int)y, (int)z);
+        }
+
+        public Vector3 ToXNAVector3()
+        {
+            return new Vector3(x, y, z);
         }
     }
 

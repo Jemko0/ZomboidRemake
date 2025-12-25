@@ -1,4 +1,5 @@
 ﻿using Iso.Engine.Core.DataStructures;
+using Iso.Engine.Core.Logging;
 using Iso.Engine.Core.Rendering;
 using Iso.Engine.Core.Rendering.DataStructures;
 using Iso.Engine.Core.Rendering.Interfaces;
@@ -7,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using SharpDX.Direct2D1.Effects;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Iso.Engine.Core.Tiles
 {
@@ -81,6 +83,9 @@ namespace Iso.Engine.Core.Tiles
 
         public void Render(ref GraphicsDeviceManager gdm, ref SpriteBatch sb, ref IsoRenderContext renderContext)
         {
+            GPURender(ref gdm, ref sb, ref renderContext);
+            return;
+
             IsoCamera camera = renderContext.camera;
             if (camera == null || chunks == null)
                 return;
@@ -170,6 +175,56 @@ namespace Iso.Engine.Core.Tiles
                 }
             }
             sb.End();
+        }
+
+        public void GPURender(ref GraphicsDeviceManager gdm, ref SpriteBatch sb, ref IsoRenderContext renderContext)
+        {
+            IsoCamera camera = renderContext.camera;
+            Effect singleTileShader = renderContext.GetExtra<Effect>("single_tile_shader");
+            GraphicsDevice device = gdm.GraphicsDevice;
+
+            Rectangle viewport = device.Viewport.Bounds;
+            float zoom = camera.GetZoom();
+
+            float halfWidth = viewport.Width / (2f * zoom);
+            float halfHeight = viewport.Height / (2f * zoom);
+
+            // Center the projection around (0, 0)
+            Matrix projection = Matrix.CreateOrthographicOffCenter(
+                -halfWidth,     // left
+                halfWidth,      // right
+                halfHeight,     // bottom
+                -halfHeight,    // top
+                0.0f,           // near
+                1.0f            // far
+            );
+
+            Matrix view = camera.viewMatrix;
+            Matrix world = Matrix.Identity;
+
+            Matrix wvp = world * view * projection;
+
+            singleTileShader.Parameters["WorldViewProjection"].SetValue(wvp);
+            singleTileShader.Parameters["TileTexture"]?.SetValue(RenderUtil.tileAtlas.Texture);
+
+            List<TileVertex> tileVertices = new List<TileVertex>();
+
+            TileRendering.AddTileQuad(ref tileVertices, 0, 0, TILEWIDTH, TILEHEIGHT);
+
+            device.RasterizerState = new RasterizerState { CullMode = CullMode.None };
+            device.DepthStencilState = DepthStencilState.None;
+
+            foreach (EffectPass pass in singleTileShader.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+
+                device.DrawUserPrimitives<TileVertex>(
+                    PrimitiveType.TriangleList,  // Using separate triangles
+                    tileVertices.ToArray(),      // Your custom vertex array
+                    0,                           // Start index
+                    2                            // Number of triangles
+                );
+            }
         }
     }
 }

@@ -7,9 +7,10 @@
 #define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
-matrix worldViewProjection;
+matrix WorldViewProjection;
 
 texture TileTexture;
+
 sampler TileSampler = sampler_state
 {
     Texture = <TileTexture>;
@@ -35,8 +36,8 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 {
     VertexShaderOutput output = (VertexShaderOutput) 0;
 
-    output.Position = mul(input.Position, worldViewProjection);
-    output.Color = input.Color;
+    output.Position = mul(input.Position, WorldViewProjection);
+    output.Color = float4(1.0f, 1.0f, 1.0f, 1.0f);
     output.TexCoord = input.TexCoord;
 
     return output;

@@ -12,8 +12,8 @@ namespace Iso
 {
     public class IsoGame : Microsoft.Xna.Framework.Game
     {
-        private GraphicsDeviceManager graphics;
-        private SpriteBatch spriteBatch;
+        public static GraphicsDeviceManager graphics;
+        public static SpriteBatch spriteBatch;
 
         public SceneManager mainSceneManager;
 
@@ -26,6 +26,10 @@ namespace Iso
             IsMouseVisible = true;
             IsFixedTimeStep = false;
             graphics.SynchronizeWithVerticalRetrace = false;
+
+            RenderUtil.window = Window;
+            AssetHelper.globalContentManager = Content;
+            AssetHelper.Setup();
         }
 
         protected override void Initialize()
@@ -33,8 +37,6 @@ namespace Iso
             base.Initialize();
 
             Fonts.SetupFonts(Content);
-            RenderUtil.window = Window;
-            AssetHelper.globalContentManager = Content;
 
             mainSceneManager = new SceneManager();
         }
@@ -43,7 +45,6 @@ namespace Iso
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             SceneManager.LoadWorldDeferred<GameInitWorld>();
-            // TODO: use this.Content to load your game content here
         }
 
         protected override void Update(GameTime gameTime)

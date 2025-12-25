@@ -13,6 +13,12 @@ namespace Iso.Engine.Core.Rendering.DataStructures
     {
         public IsoCamera? camera;
         public Dictionary<string, object?> extras { get; } = new();
+
+        public T GetExtra<T>(string key)
+        {
+            extras.TryGetValue(key, out object? value);
+            return (T)value;
+        }
     }
 
     public class IsoRenderContextBuilder

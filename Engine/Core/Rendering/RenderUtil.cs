@@ -1,16 +1,14 @@
-﻿using Iso.Engine.Core.DataStructures;
+﻿using Iso.Engine.Core.Assets;
+using Iso.Engine.Core.DataStructures;
 using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Iso.Engine.Core.Rendering
 {
     public class RenderUtil
     {
         public static GameWindow window;
+        public static AssetHelper.TileAtlas tileAtlas = null;
         public static Vector2 WorldToScreen(FVector3 pos, float tileWidth, float tileHeight, IsoCamera camera)
         {
             var camPos = camera.GetPosition();
