@@ -14,7 +14,7 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace Iso.Engine.Core
 {
-    public class World : IUpdateable
+    public class World : IIsoUpdateable
     {
         public Tilemap tilemap;
         protected string mapFilePath = "";

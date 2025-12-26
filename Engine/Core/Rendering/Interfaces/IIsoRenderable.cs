@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 #nullable enable
 namespace Iso.Engine.Core.Rendering.Interfaces
 {
-    internal interface IRenderable
+    internal interface IIsoRenderable
     {
         public void Render(ref GraphicsDeviceManager gdm, ref SpriteBatch sb, ref IsoRenderContext renderContext);
     }

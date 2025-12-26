@@ -53,7 +53,7 @@ namespace Iso
 
             mainSceneManager.Update(delta);
 
-            if(SceneManager.loadedWorld.activeCamera == null)
+            if(SceneManager.GetWorld().activeCamera == null)
             {
                 return;
             }
@@ -69,13 +69,13 @@ namespace Iso
 
             camDelta *= delta;
 
-            float zoom = SceneManager.loadedWorld.activeCamera.GetZoom();
+            float zoom = SceneManager.GetWorld().activeCamera.GetZoom();
 
             zoom += Keyboard.GetState().IsKeyDown(Keys.OemPlus) ? (float)delta * zoom : 0.0f;
             zoom += Keyboard.GetState().IsKeyDown(Keys.OemMinus) ? (float)-delta * zoom : 0.0f;
 
-            SceneManager.loadedWorld.activeCamera.Translate(camDelta);
-            SceneManager.loadedWorld.activeCamera.SetZoom(zoom);
+            SceneManager.GetWorld().activeCamera.Translate(camDelta);
+            SceneManager.GetWorld().activeCamera.SetZoom(zoom);
 
             base.Update(gameTime);
         }

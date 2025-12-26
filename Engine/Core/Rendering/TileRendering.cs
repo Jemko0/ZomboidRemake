@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Iso.Engine.Core.Rendering
 {
+    using Iso.Engine.Core.DataStructures;
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
     public struct TileVertex : IVertexType
@@ -34,17 +35,30 @@ namespace Iso.Engine.Core.Rendering
 
     public class TileRendering
     {
-        public static void AddTileQuad(ref List<TileVertex> vertices, float x, float y, float tileWidth, float tileHeight)
+        public static void AddTileQuad(TileVertex[] buffer, ref int index, int tx, int ty, float tileWidth, float tileHeight, ETileType type)
         {
+            float x = (tx - ty) * (tileWidth / 2.0f);
+            float y = (tx + ty) * (tileHeight / 2.0f);
+
+            float textureWidth = 32;
+            float textureHeight = 48;
+
+            int borderX = Math.Abs((int)(((tx % 96) / 96.0f) * 255.0f));
+            int borderY = Math.Abs((int)(((ty % 96) / 96.0f) * 255.0f));
+
+            Color instanceData = new Color((int)type, borderX, borderY, 255);
+
+            float yOffset = textureHeight - tileHeight;
+
             // First triangle
-            vertices.Add(new TileVertex(new Vector3(x, y, 0), new Vector2(0, 0), Color.White));
-            vertices.Add(new TileVertex(new Vector3(x + tileWidth, y, 0), new Vector2(1, 0), Color.White));
-            vertices.Add(new TileVertex(new Vector3(x, y + tileHeight, 0), new Vector2(0, 1), Color.White));
+            buffer[index++] = new TileVertex(new Vector3(x, y - yOffset, 0), new Vector2(0, 0), instanceData);
+            buffer[index++] = new TileVertex(new Vector3(x + textureWidth, y - yOffset, 0), new Vector2(1, 0), instanceData);
+            buffer[index++] = new TileVertex(new Vector3(x, y - yOffset + textureHeight, 0), new Vector2(0, 1), instanceData);
 
             // Second triangle
-            vertices.Add(new TileVertex(new Vector3(x + tileWidth, y, 0), new Vector2(1, 0), Color.White));
-            vertices.Add(new TileVertex(new Vector3(x + tileWidth, y + tileHeight, 0), new Vector2(1, 1), Color.White));
-            vertices.Add(new TileVertex(new Vector3(x, y + tileHeight, 0), new Vector2(0, 1), Color.White));
+            buffer[index++] = new TileVertex(new Vector3(x + textureWidth, y - yOffset, 0), new Vector2(1, 0), instanceData);
+            buffer[index++] = new TileVertex(new Vector3(x + textureWidth, y - yOffset + textureHeight, 0), new Vector2(1, 1), instanceData);
+            buffer[index++] = new TileVertex(new Vector3(x, y - yOffset + textureHeight, 0), new Vector2(0, 1), instanceData);
         }
     }
 }

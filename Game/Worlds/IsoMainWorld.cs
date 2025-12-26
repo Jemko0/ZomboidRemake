@@ -18,18 +18,18 @@ namespace Iso.Game.Worlds
         public override void Init()
         {
             base.Init();
+            activeCamera = new IsoCamera();
+            singleTileShader = AssetHelper.globalContentManager.Load<Effect>("shaders/single_tile_shader");
+
             tilemap = new Tilemap();
             tilemap.Init();
-
-            activeCamera = new IsoCamera();
-
-            singleTileShader = AssetHelper.globalContentManager.Load<Effect>("shaders/single_tile_shader");
         }
 
         double lastDelta = 0;
         public override void Update(double deltaTime)
         {
             base.Update(deltaTime);
+            tilemap.Update(deltaTime);
             lastDelta = deltaTime;
         }
 
@@ -46,9 +46,7 @@ namespace Iso.Game.Worlds
         {
             base.Render(ref gdm, ref sb);
 
-            IsoLog.Log("LogDebug", "RENDER EVENT RENDER EVENT");
-
-            IntVector2 currentChunkPos = TileChunk.WorldToChunkPosition(activeCamera.GetPosition().ToIntVector3());
+            IntVector2 currentChunkPos = TileChunk.WorldToChunkPosition(activeCamera.GetPosition());
 
             int fps = (int)Math.Clamp(1.0 / lastDelta, 0.0, double.MaxValue);
 

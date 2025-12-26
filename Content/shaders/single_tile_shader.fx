@@ -8,8 +8,10 @@
 #endif
 
 matrix WorldViewProjection;
-
 texture TileTexture;
+
+float2 AtlasSize = float2(64.0f, 96.0f);
+float2 TileSize = float2(32.0f, 48.0f);
 
 sampler TileSampler = sampler_state
 {
@@ -37,7 +39,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
     VertexShaderOutput output = (VertexShaderOutput) 0;
 
     output.Position = mul(input.Position, WorldViewProjection);
-    output.Color = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    output.Color = input.Color;
     output.TexCoord = input.TexCoord;
 
     return output;
@@ -45,9 +47,28 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 texColor = tex2D(TileSampler, input.TexCoord);
-    return texColor * input.Color;
+    float tileType = floor(input.Color.r * 255.0f - 0.5f);
+    
+    float tilesPerRow = AtlasSize.x / TileSize.x;
+    
+    float tileX = fmod(tileType, tilesPerRow);
+    float tileY = floor(tileType / tilesPerRow);
+    
+    // uv offset
+    float2 tileOffset = float2(tileX * TileSize.x, tileY * TileSize.y);
+    
+    // scale the input uv to the tile size and add offset
+    float2 atlasUV = (input.TexCoord * TileSize + tileOffset) / AtlasSize;
+    
+    // sample the texture
+    float4 texColor = tex2D(TileSampler, atlasUV);
+    
+    float4 finalColor = texColor;
+    finalColor.gb = texColor.gb * input.Color.gb;
+    
+    return finalColor;
 }
+
 
 technique BasicColorDrawing
 {

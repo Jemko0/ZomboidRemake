@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace Iso.Engine.Core
 {
-    public class SceneManager : IUpdateable
+    public class SceneManager : IIsoUpdateable
     {
-        public static World loadedWorld;
-        public static World pendingWorld;
+        protected static World loadedWorld;
+        protected static World pendingWorld;
 
         public static void LoadWorldDeferred<T>() where T : World
         {
@@ -32,14 +32,19 @@ namespace Iso.Engine.Core
             loadedWorld = newWorld;
         }
 
+        public static World GetWorld()
+        {
+            return loadedWorld;
+        }
+
         private void LoadPendingWorld()
         {
-            World copy = pendingWorld;
+            World _ = pendingWorld;
             pendingWorld = null;
+            loadedWorld = _;
 
-            copy.Init();
+            loadedWorld.Init();
 
-            loadedWorld = copy;
 
             IsoLog.Log("LogSceneManager", string.Format("Pending World Loaded: {0}", loadedWorld.GetType()));
         }

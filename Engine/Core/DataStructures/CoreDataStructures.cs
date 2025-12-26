@@ -144,6 +144,16 @@ namespace Iso.Engine.Core.DataStructures
             return new IntVector2(a.x / b.x, a.y / b.y);
         }
 
+        public static bool operator ==(IntVector2 a, IntVector2 b)
+        {
+            return a.x == b.x && a.y == b.y;
+        }
+
+        public static bool operator !=(IntVector2 a, IntVector2 b)
+        {
+            return !(a == b);
+        }
+
         public static IntVector2 operator +(IntVector2 a, IntVector2 b)
         {
             return new IntVector2(a.x + b.x, a.y + b.y);

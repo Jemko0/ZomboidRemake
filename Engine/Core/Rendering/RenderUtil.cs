@@ -9,6 +9,15 @@ namespace Iso.Engine.Core.Rendering
     {
         public static GameWindow window;
         public static AssetHelper.TileAtlas tileAtlas = null;
+
+        /// <summary>
+        /// Used for CPU based Rendering, refer to matrices for GPU rendering
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="tileWidth"></param>
+        /// <param name="tileHeight"></param>
+        /// <param name="camera"></param>
+        /// <returns></returns>
         public static Vector2 WorldToScreen(FVector3 pos, float tileWidth, float tileHeight, IsoCamera camera)
         {
             var camPos = camera.GetPosition();
@@ -29,6 +38,14 @@ namespace Iso.Engine.Core.Rendering
             return new Vector2(screenX, screenY);
         }
 
+        /// <summary>
+        /// Used for CPU based Rendering, refer to matrices for GPU rendering
+        /// </summary>
+        /// <param name="screen"></param>
+        /// <param name="tileWidth"></param>
+        /// <param name="tileHeight"></param>
+        /// <param name="camera"></param>
+        /// <returns></returns>
         public static Vector2 ScreenToWorld(
             Vector2 screen,
             float tileWidth,
@@ -58,7 +75,11 @@ namespace Iso.Engine.Core.Rendering
             return new Vector2(worldX, worldY);
         }
 
-
+        /// <summary>
+        /// Used for CPU based Rendering, refer to matrices for GPU rendering
+        /// </summary>
+        /// <param name="originalSize"></param>
+        /// <returns></returns>
         public static float GetOnScreenSize(float originalSize)
         {
             return originalSize * GetDPIScale();

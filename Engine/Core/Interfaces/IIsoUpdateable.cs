@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Iso.Engine.Core.Interfaces
 {
-    internal interface IUpdateable
+    internal interface IIsoUpdateable
     {
         void Update(double deltaTime);
     }

@@ -1,4 +1,5 @@
 ﻿using Iso.Engine.Core.DataStructures;
+using Iso.Engine.Core.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,13 +82,20 @@ namespace Iso.Engine.Core.Tiles
             SetTileAt(new IntVector3(0, 0, 0), new SquareTileData(t));
         }
 
-        public static IntVector2 WorldToChunkPosition(IntVector3 worldPosition)
+        public static IntVector2 WorldToChunkPosition(FVector3 cameraScreenPosition)
         {
-            int tileX = worldPosition.x / Tilemap.TILEWIDTH;
-            int tileY = worldPosition.y / Tilemap.TILEHEIGHT;
+            // Camera is in screen pixel coordinates
+            // Need to convert screen pixels to isometric tile coordinates
 
-            int chunkX = (int)Math.Floor((double)tileX / CHUNKSIZE);
-            int chunkY = (int)Math.Floor((double)tileY / CHUNKSIZE);
+            float tileWidth = Tilemap.TILEWIDTH;   // 32
+            float tileHeight = Tilemap.TILEHEIGHT; // 16
+
+            // Inverse isometric transformation: screen pixels -> tile coordinates
+            float tileX = (cameraScreenPosition.x / (tileWidth / 2.0f) + cameraScreenPosition.y / (tileHeight / 2.0f)) / 2.0f;
+            float tileY = (cameraScreenPosition.y / (tileHeight / 2.0f) - cameraScreenPosition.x / (tileWidth / 2.0f)) / 2.0f;
+
+            int chunkX = (int)Math.Floor(tileX / CHUNKSIZE);
+            int chunkY = (int)Math.Floor(tileY / CHUNKSIZE);
 
             return new IntVector2(chunkX, chunkY);
         }
