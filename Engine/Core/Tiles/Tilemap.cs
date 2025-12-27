@@ -78,87 +78,12 @@ namespace Iso.Engine.Core.Tiles
             {
                 for(int y = -2; y < 2; y++)
                 {
-                    TileChunk c = new TileChunk();
+                    TileChunk c = new TileChunk(new(x, y));
                     c.BasicFillWithTiles();
 
                     chunks.Add(new IntVector2(x, y), c);
                 }
             }
-
-            UpdateVertexBufferTimed();
-        }
-
-        public void UpdateVertexBufferTimed()
-        {
-            DateTime start = DateTime.Now;
-            UpdateVertexBuffer();
-            DateTime end = DateTime.Now;
-
-            TimeSpan time = end - start;
-
-            IsoLog.Log("LogTilemap", string.Format("UpdateVertexBuffer() took {0}ms", time.TotalMilliseconds), ELogVerbosity.Debug);
-        }
-
-        public void UpdateVertexBuffer()
-        {
-            GraphicsDeviceManager gdm = IsoGame.graphics;
-            VisibleChunkCoords v = GetVisibleChunkCoordinates(ref gdm, SceneManager.GetWorld().activeCamera);
-
-            int vertexCount = 0;
-
-            for (int chunkY = v.minChunkY; chunkY <= v.maxChunkY; chunkY++)
-            {
-                for (int chunkX = v.minChunkX; chunkX <= v.maxChunkX; chunkX++)
-                {
-                    if (!chunks.TryGetValue(new IntVector2(chunkX, chunkY), out var chunk))
-                    {
-                        continue;
-                    }
-
-                    int startX = Math.Max(0, v.minX - chunkX * TileChunk.CHUNKSIZE);
-                    int endX = Math.Min(TileChunk.CHUNKSIZE - 1, v.maxX - chunkX * TileChunk.CHUNKSIZE);
-                    int startY = Math.Max(0, v.minY - chunkY * TileChunk.CHUNKSIZE);
-                    int endY = Math.Min(TileChunk.CHUNKSIZE - 1, v.maxY - chunkY * TileChunk.CHUNKSIZE);
-
-                    for (int z = v.minZ; z <= v.maxZ; z++)
-                    {
-                        for (int lx = startX; lx <= endX; lx++)
-                        {
-                            for (int ly = startY; ly <= endY; ly++)
-                            {
-                                int worldX = chunkX * TileChunk.CHUNKSIZE + lx;
-                                int worldY = chunkY * TileChunk.CHUNKSIZE + ly;
-
-                                List<TileObject> objects = chunk.tiles[lx, ly, z]?.objects;
-
-                                if (objects == null)
-                                {
-                                    continue;
-                                }
-
-                                foreach (TileObject o in objects)
-                                {
-                                    if(o == null)
-                                    {
-                                        continue;
-                                    }
-
-                                    if (vertexCount + VERTICES_PER_TILE > vertexBuffer.Length)
-                                    {
-                                        IsoLog.Log("LogTilemap", "Vertex buffer full!");
-                                        actualVertexCount = vertexCount;
-                                        return;
-                                    }
-
-                                    TileRendering.AddTileQuad(vertexBuffer, ref vertexCount, worldX, worldY, TILEWIDTH, TILEHEIGHT, o.type);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            actualVertexCount = vertexCount;
         }
 
         public void Dispose()
@@ -170,97 +95,6 @@ namespace Iso.Engine.Core.Tiles
         public void Render(ref GraphicsDeviceManager gdm, ref SpriteBatch sb, ref IsoRenderContext renderContext)
         {
             GPURender(ref gdm, ref sb, ref renderContext);
-            return;
-
-            IsoCamera camera = renderContext.camera;
-            if (camera == null || chunks == null)
-                return;
-
-            Vector2 tl = Vector2.Zero;
-            Vector2 tr = new Vector2(gdm.PreferredBackBufferWidth, 0);
-            Vector2 bl = new Vector2(0, gdm.PreferredBackBufferHeight);
-            Vector2 br = new Vector2(gdm.PreferredBackBufferWidth, gdm.PreferredBackBufferHeight);
-
-            Vector2 wTL = RenderUtil.ScreenToWorld(tl, TILEWIDTH, TILEHEIGHT, camera);
-            Vector2 wTR = RenderUtil.ScreenToWorld(tr, TILEWIDTH, TILEHEIGHT, camera);
-            Vector2 wBL = RenderUtil.ScreenToWorld(bl, TILEWIDTH, TILEHEIGHT, camera);
-            Vector2 wBR = RenderUtil.ScreenToWorld(br, TILEWIDTH, TILEHEIGHT, camera);
-
-            int minX = (int)Math.Floor(Math.Min(Math.Min(wTL.X, wTR.X), Math.Min(wBL.X, wBR.X))) - 2;
-            int maxX = (int)Math.Ceiling(Math.Max(Math.Max(wTL.X, wTR.X), Math.Max(wBL.X, wBR.X))) + 2;
-            int minY = (int)Math.Floor(Math.Min(Math.Min(wTL.Y, wTR.Y), Math.Min(wBL.Y, wBR.Y))) - 2;
-            int maxY = (int)Math.Ceiling(Math.Max(Math.Max(wTL.Y, wTR.Y), Math.Max(wBL.Y, wBR.Y))) + 2;
-
-            int minChunkX = Math.DivRem(minX, TileChunk.CHUNKSIZE, out int _);
-            int maxChunkX = Math.DivRem(maxX, TileChunk.CHUNKSIZE, out int _);
-            int minChunkY = Math.DivRem(minY, TileChunk.CHUNKSIZE, out int _);
-            int maxChunkY = Math.DivRem(maxY, TileChunk.CHUNKSIZE, out int _);
-
-            if (minX < 0) minChunkX--;
-            if (minY < 0) minChunkY--;
-
-            int zMin = Math.Max(0, (int)camera.GetPosition().z - 1);
-            int zMax = Math.Min(TileChunk.MAX_Z - 1, (int)camera.GetPosition().z + 1);
-
-            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
-
-            for (int chunkY = minChunkY; chunkY <= maxChunkY; chunkY++)
-            {
-                for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++)
-                {
-                    if (!chunks.TryGetValue(new IntVector2(chunkX, chunkY), out var chunk))
-                        continue;
-
-                    int startX = Math.Max(0, minX - chunkX * TileChunk.CHUNKSIZE);
-                    int endX = Math.Min(TileChunk.CHUNKSIZE - 1, maxX - chunkX * TileChunk.CHUNKSIZE);
-                    int startY = Math.Max(0, minY - chunkY * TileChunk.CHUNKSIZE);
-                    int endY = Math.Min(TileChunk.CHUNKSIZE - 1, maxY - chunkY * TileChunk.CHUNKSIZE);
-
-                    for (int z = zMin; z <= zMax; z++)
-                    {
-                        for (int lx = startX; lx <= endX; lx++)
-                        {
-                            for (int ly = startY; ly <= endY; ly++)
-                            {
-                                SquareTileData square = chunk.tiles[lx, ly, z];
-                                if (square?.objects == null)
-                                    continue;
-
-                                int worldX = chunkX * TileChunk.CHUNKSIZE + lx;
-                                int worldY = chunkY * TileChunk.CHUNKSIZE + ly;
-
-                                FVector3 worldPos = new FVector3(worldX, worldY, z);
-                                Vector2 screenPos = RenderUtil.WorldToScreen(worldPos, TILEWIDTH, TILEHEIGHT, camera);
-                                float scale = RenderUtil.GetOnScreenSize(camera.GetZoom());
-
-                                foreach (var obj in square.objects)
-                                {
-                                    if (obj.type == ETileType.NONE)
-                                        continue;
-
-                                    TileDefinitionData def = TileDefinitions.definitions[obj.type];
-                                    Vector2 origin = new Vector2(def.tileTexture.Width / 2f, def.tileTexture.Height);
-
-                                    sb.Draw(
-                                        def.tileTexture,
-                                        screenPos,
-                                        null,
-                                        Color.White,
-                                        0f,
-                                        origin,
-                                        scale,
-                                        SpriteEffects.None,
-                                        0.0f
-                                    );
-
-                                    //sb.DrawString(Fonts.monospace, string.Format("{0} {1}", lx, ly), screenPos, Color.Black);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            sb.End();
         }
 
         public void GPURender(ref GraphicsDeviceManager gdm, ref SpriteBatch sb, ref IsoRenderContext renderContext)
@@ -269,61 +103,70 @@ namespace Iso.Engine.Core.Tiles
             Effect singleTileShader = renderContext.GetExtra<Effect>("single_tile_shader");
             GraphicsDevice device = gdm.GraphicsDevice;
 
+            device.SetRenderTarget(null); //ensure we are targeting the backbuffer
+
             Rectangle viewport = device.Viewport.Bounds;
-            float zoom = camera.GetZoom();
+
+            float zoom = RenderUtil.GetOnScreenSize(camera.GetZoom());
 
             float halfWidth = viewport.Width / (2f * zoom);
             float halfHeight = viewport.Height / (2f * zoom);
 
-            Matrix projection = Matrix.CreateOrthographicOffCenter(
-                -halfWidth,     // left
-                halfWidth,      // right
-                halfHeight,     // bottom
-                -halfHeight,    // top
-                0.0f,           // near
-                1.0f            // far
-            );
-
+            Matrix projection = Matrix.CreateOrthographicOffCenter(-halfWidth, halfWidth, halfHeight, -halfHeight, 0.0f, 1.0f);
             Matrix view = camera.viewMatrix;
-            Matrix world = Matrix.Identity;
-
-            Matrix wvp = world * view * projection;
+            Matrix wvp = view * projection;
 
             singleTileShader.Parameters["WorldViewProjection"].SetValue(wvp);
-            singleTileShader.Parameters["TileTexture"]?.SetValue(RenderUtil.tileAtlas.Texture);;
+            singleTileShader.Parameters["TileTexture"]?.SetValue(RenderUtil.tileAtlas.Texture);
 
-            device.RasterizerState = new RasterizerState { CullMode = CullMode.None };
+            device.RasterizerState = RasterizerState.CullNone;
             device.DepthStencilState = DepthStencilState.None;
+            device.BlendState = BlendState.AlphaBlend;
+            device.SamplerStates[0] = SamplerState.PointClamp;
 
-            if(actualVertexCount < 3)
-            {
-                return;
-            }
+            VisibleChunkCoords v = GetVisibleChunkCoordinates(ref gdm, camera);
 
             foreach (EffectPass pass in singleTileShader.CurrentTechnique.Passes)
             {
                 pass.Apply();
 
-                device.DrawUserPrimitives<TileVertex>(
-                    PrimitiveType.TriangleList,
-                    vertexBuffer,
-                    0,
-                    actualVertexCount / 3
-                );
+                for (int y = v.minChunkY; y <= v.maxChunkY; y++)
+                {
+                    for (int x = v.minChunkX; x <= v.maxChunkX; x++)
+                    {
+                        if (!chunks.TryGetValue(new IntVector2(x, y), out TileChunk chunk))
+                            continue;
+
+                        // if the chunk was modified, bake it now
+                        if (chunk.dirty)
+                        {
+                            chunk.RebuildVertexBuffer(device);
+                        }
+
+                        if (chunk.gpuVertexBuffer != null && chunk.gpuVertexBuffer.VertexCount > 0)
+                        {
+                            device.SetVertexBuffer(chunk.gpuVertexBuffer);
+
+                            device.DrawPrimitives(
+                                PrimitiveType.TriangleList,
+                                0,
+                                chunk.gpuVertexBuffer.VertexCount / 3
+                            );
+                        }
+                    }
+                }
             }
         }
 
         public VisibleChunkCoords GetVisibleChunkCoordinates(ref GraphicsDeviceManager gdm, IsoCamera camera)
         {
-            float zoom = camera.GetZoom();
-
-            float viewportWidth = gdm.PreferredBackBufferWidth / zoom;
-            float viewportHeight = gdm.PreferredBackBufferHeight / zoom;
+            int screenW = gdm.GraphicsDevice.Viewport.Width;
+            int screenH = gdm.GraphicsDevice.Viewport.Height;
 
             Vector2 tl = Vector2.Zero;
-            Vector2 tr = new Vector2(viewportWidth, 0);
-            Vector2 bl = new Vector2(0, viewportHeight);
-            Vector2 br = new Vector2(viewportWidth, viewportHeight);
+            Vector2 tr = new Vector2(screenW, 0);
+            Vector2 bl = new Vector2(0, screenH);
+            Vector2 br = new Vector2(screenW, screenH);
 
             Vector2 wTL = RenderUtil.ScreenToWorld(tl, TILEWIDTH, TILEHEIGHT, camera);
             Vector2 wTR = RenderUtil.ScreenToWorld(tr, TILEWIDTH, TILEHEIGHT, camera);
@@ -355,7 +198,6 @@ namespace Iso.Engine.Core.Tiles
 
             if (currentChunkPos != lastChunkPosition || lastZoom != zoom)
             {
-                UpdateVertexBufferTimed();
                 lastZoom = zoom;
                 lastChunkPosition = currentChunkPos;
 

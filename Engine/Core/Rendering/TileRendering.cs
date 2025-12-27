@@ -43,10 +43,7 @@ namespace Iso.Engine.Core.Rendering
             float textureWidth = 32;
             float textureHeight = 48;
 
-            int borderX = Math.Abs((int)(((tx % 96) / 96.0f) * 255.0f));
-            int borderY = Math.Abs((int)(((ty % 96) / 96.0f) * 255.0f));
-
-            Color instanceData = new Color((int)type, borderX, borderY, 255);
+            Color instanceData = new Color((int)type, 0, 0, 255);
 
             float yOffset = textureHeight - tileHeight;
 

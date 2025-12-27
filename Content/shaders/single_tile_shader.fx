@@ -64,7 +64,6 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float4 texColor = tex2D(TileSampler, atlasUV);
     
     float4 finalColor = texColor;
-    finalColor.gb = texColor.gb * input.Color.gb;
     
     return finalColor;
 }
