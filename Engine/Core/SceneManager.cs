@@ -15,6 +15,9 @@ namespace Iso.Engine.Core
     {
         protected static World loadedWorld;
         protected static World pendingWorld;
+        protected static Input inputManager = new Input();
+
+        public static Input GetInputManager() { return inputManager; }
 
         public static void LoadWorldDeferred<T>() where T : World
         {
@@ -61,6 +64,8 @@ namespace Iso.Engine.Core
 
         public void Update(double deltaTime)
         {
+            inputManager?.Update(deltaTime);
+
             if (loadedWorld != null)
             {
                 loadedWorld.Update(deltaTime);

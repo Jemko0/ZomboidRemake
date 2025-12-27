@@ -2,6 +2,7 @@
 using Iso.Engine.Core.UI.Elements;
 using Microsoft.Xna.Framework;
 using Iso.Engine.Core.UI.Elements;
+using System.Runtime.CompilerServices;
 
 namespace Iso.Engine.Core.UI.Extensions
 {
@@ -31,6 +32,7 @@ namespace Iso.Engine.Core.UI.Extensions
         public static T Attach<T>(this T parent, UIElement child) where T : Panel
         {
             parent.GetChildren().Add(child);
+            child.parent = parent;
             return parent;
         }
 
@@ -92,6 +94,12 @@ namespace Iso.Engine.Core.UI.Extensions
         public static T SetName<T>(this T element, string name) where T : UIElement
         {
             element.name = name;
+            return element;
+        }
+
+        public static T SetTint<T>(this T element, Color tint) where T : Image
+        {
+            element.tint = tint;
             return element;
         }
     }

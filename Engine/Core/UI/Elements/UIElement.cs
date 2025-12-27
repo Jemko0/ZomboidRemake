@@ -1,8 +1,10 @@
-﻿using Iso.Engine.Core.Rendering;
+﻿using Iso.Engine.Core.Logging;
+using Iso.Engine.Core.Rendering;
 using Iso.Engine.Core.Rendering.DataStructures;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace Iso.Engine.Core.UI.Elements
 {
@@ -19,6 +21,42 @@ namespace Iso.Engine.Core.UI.Elements
         public Vector2 anchorMax = Vector2.Zero;
 
         public bool scaleWithDPI = false;
+
+        public UIElement parent;
+
+        public Rectangle GetAbsolouteBounds()
+        {
+            return absoluteBounds;
+        }
+
+        public virtual List<UIElement> GetChildren()
+        {
+            return new List<UIElement>();
+        }
+
+        public void BubbleEvent(string eventName, Dictionary<string, object?> data = null)
+        {
+            if(!OnEventReceived(eventName, data))
+            {
+                parent?.BubbleEvent(eventName, data);
+            }
+        }
+        public bool IsPressed(Point logicalMousePos)
+        {
+            return IsHovered(logicalMousePos) &&
+                   Mouse.GetState().LeftButton == ButtonState.Pressed;
+        }
+
+        public bool IsHovered(Point logicalMousePos)
+        {
+            return absoluteBounds.Contains(logicalMousePos);
+        }
+
+        protected virtual bool OnEventReceived(string eventName, Dictionary<string, object?> data)
+        {
+            IsoLog.Log("LogUI", string.Format("EVENT RECEIVED: {0} / Who?: {1}", eventName, this.name));
+            return false;
+        }
 
         public Rectangle CalculateBounds(Rectangle parentRect)
         {

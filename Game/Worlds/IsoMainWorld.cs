@@ -6,6 +6,7 @@ using Iso.Engine.Core.Rendering.DataStructures;
 using Iso.Engine.Core.Tiles;
 using Iso.Engine.Core.UI;
 using Iso.Engine.Core.UI.Elements;
+using Iso.Engine.Core.UI.Elements.Templates;
 using Iso.Engine.Core.UI.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -27,41 +28,12 @@ namespace Iso.Game.Worlds
 
             uiRenderer.Add
             (
-                new Wrapper()
-                    .CenterInParent(500, 500)
-                    .SetBackground
-                    (
-                        new Image()
-                            .FillParent()
-                            .SetDrawMode(ImageDrawMode.Box)
-                            .SetSliceSize(8)
-                            .SetBrush(AssetHelper.globalContentManager.Load<Texture2D>("ui/ui_panel_background"))
-                    )
-                    .SetInnerSlotPadding(new IntVector2(5, 5))
-                    .SetChild
-                    (
-                        new VStack()
-                            .SetName("Window VStack")
-                            .FillParent()
-                            .Attach
-                            (
-                                new Wrapper()
-                                    .SetName("Title Bar")
-                                    .FillWidth(0)
-                                    .SetHeight(32)
-                                    .SetBackground(
-                                        new Image()
-                                            .SetBrush(UIRenderer.onePxWhite)
-                                            .FillParent()
-                                    )
-                            )
-                            .Attach
-                            (
-                                new VStack()
-                                    .SetName("Window Content")
-                                    .FillParent()
-                            )
-                    )
+                new Window()
+                    .SetName("Window")
+                    .SetPosition(new IntVector2(150, 150))
+                    .SetWidth(360)
+                    .SetHeight(270)
+                    .Create()
             );
         }
 

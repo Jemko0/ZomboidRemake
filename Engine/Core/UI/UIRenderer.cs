@@ -5,6 +5,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Iso.Engine.Core.UI.Elements;
 using Iso.Engine.Core.UI.Extensions;
 using Iso.Engine.Core.Rendering;
+using Iso.Engine.Core.Interfaces;
+using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace Iso.Engine.Core.UI
 {
@@ -16,11 +19,74 @@ namespace Iso.Engine.Core.UI
         public UIRenderer()
         {
             root = new Panel()
+                    .SetName("root")
                     .SetWidth(1920)
                     .SetHeight(1080)
                     .FillParent();
 
             RenderUtil.window.ClientSizeChanged += OnWindowResized;
+            BindEvents();
+        }
+
+        private void BindEvents()
+        {
+            SceneManager.GetInputManager().onMouseLeftClick += UIRenderer_onMouseLeftClick;
+            SceneManager.GetInputManager().onMouseRightClick += UIRenderer_onMouseRightClick; ;
+        }
+
+        private void UIRenderer_onMouseRightClick(MouseEventArgs e)
+        {
+            Point logicalMouse = GetLogicalMouse(e.position.ToPoint());
+
+            UIElement hit = GetElementAt(root, logicalMouse);
+            if (hit == null) return;
+
+            Dictionary<string, object?> data = new Dictionary<string, object?>();
+            data.Add("args", e);
+
+            hit.BubbleEvent("LeftRight", data);
+        }
+
+        private void UIRenderer_onMouseLeftClick(MouseEventArgs e)
+        {
+            Point logicalMouse = GetLogicalMouse(e.position.ToPoint());
+
+            UIElement hit = GetElementAt(root, logicalMouse);
+            if (hit == null) return;
+
+            Dictionary<string, object?> data = new Dictionary<string, object?>();
+            data.Add("args", e);
+            
+            hit.BubbleEvent("LeftClick", data);
+        }
+
+        private Point GetLogicalMouse(Point physicalPos)
+        {
+            float dpi = RenderUtil.GetDPIScale();
+            return new Point((int)(physicalPos.X / dpi), (int)(physicalPos.Y / dpi));
+        }
+
+        private UIElement GetElementAt(UIElement parent, Point mousePos)
+        {
+            if (parent == null) return null;
+
+            var children = parent.GetChildren();
+            if (children != null)
+            {
+                for (int i = children.Count - 1; i >= 0; i--)
+                {
+                    var hit = GetElementAt(children[i], mousePos);
+                    if (hit != null) return hit;
+                }
+            }
+
+            // if no child was hit check this element
+            if (parent.GetAbsolouteBounds().Contains(mousePos))
+            {
+                return parent;
+            }
+
+            return null;
         }
 
         private void OnWindowResized(object sender, System.EventArgs e)

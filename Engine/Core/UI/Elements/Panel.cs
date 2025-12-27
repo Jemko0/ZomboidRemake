@@ -9,7 +9,7 @@ namespace Iso.Engine.Core.UI.Elements
     {
         private List<UIElement> children = new List<UIElement>();
 
-        public List<UIElement> GetChildren()
+        public override List<UIElement> GetChildren()
         {
             return children;
         }

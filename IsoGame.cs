@@ -58,6 +58,8 @@ namespace Iso
                 return;
             }
 
+            
+
             FVector3 camDelta = new FVector3();
 
             float camSpeed = Tilemap.TILEWIDTH * 5;
