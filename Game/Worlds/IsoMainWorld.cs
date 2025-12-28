@@ -4,8 +4,6 @@ using Iso.Engine.Core.DataStructures;
 using Iso.Engine.Core.Rendering;
 using Iso.Engine.Core.Rendering.DataStructures;
 using Iso.Engine.Core.Tiles;
-using Iso.Engine.Core.UI;
-using Iso.Engine.Core.UI.Elements;
 using Iso.Engine.Core.UI.Elements.Templates;
 using Iso.Engine.Core.UI.Extensions;
 using Microsoft.Xna.Framework;
@@ -30,9 +28,10 @@ namespace Iso.Game.Worlds
             (
                 new Window()
                     .SetName("Window")
+                    .SetAnchor(new Vector2(0, 0), new Vector2(0, 0))
                     .SetPosition(new IntVector2(150, 150))
-                    .SetWidth(360)
-                    .SetHeight(270)
+                    .SetWidth(720)
+                    .SetHeight(480)
                     .Create()
             );
         }
@@ -59,16 +58,16 @@ namespace Iso.Game.Worlds
             base.Render(ref gdm, ref sb);
 
             IntVector2 currentChunkPos = TileChunk.WorldToChunkPosition(activeCamera.GetPosition());
-
+            
             int fps = (int)Math.Clamp(1.0 / lastDelta, 0.0, double.MaxValue);
 
-            float scale = 1.0f;
+            float scale = 3.0f;
 
             sb.Begin(SpriteSortMode.Immediate);
             sb.DrawString(Fonts.monospace, string.Format("CX: {0} CY: {1}", currentChunkPos.x, currentChunkPos.y), new Vector2(100, 72), Color.Red, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
-            sb.DrawString(Fonts.monospace, string.Format("X: {0} Y: {1}", activeCamera.GetPosition().x, activeCamera.GetPosition().y), new Vector2(100, 100), Color.Red, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
-            sb.DrawString(Fonts.monospace, string.Format("D: {0}", lastDelta), new Vector2(100, 132), Color.Red, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
-            sb.DrawString(Fonts.monospace, string.Format("FPS: {0}", fps), new Vector2(100, 164), Color.Red, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
+            sb.DrawString(Fonts.monospace, string.Format("X: {0} Y: {1}", activeCamera.GetPosition().x, activeCamera.GetPosition().y), new Vector2(100, 72 * 2), Color.Red, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
+            sb.DrawString(Fonts.monospace, string.Format("D: {0}", lastDelta), new Vector2(100, 72 * 3), Color.Red, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
+            sb.DrawString(Fonts.monospace, string.Format("FPS: {0}", fps), new Vector2(100, 72 * 4), Color.Red, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);
             sb.End();
         }
     }

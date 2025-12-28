@@ -1,32 +1,17 @@
 ﻿using Iso.Engine.Core.Rendering.DataStructures;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 
 namespace Iso.Engine.Core.UI.Elements
 {
-    public class VStack : Panel
+    public class HStack : Panel
     {
         public int spacing = 0;
 
-        public int GetTotalContentHeight()
-        {
-            int total = 0;
-            List<UIElement> children = GetChildren();
-            foreach (var child in children)
-            {
-                if (child.visibility == UIVisibilityMode.COLLAPSED) continue;
-                total += child.bounds.Height + spacing;
-            }
-            return total;
-        }
-
         protected override void UIRender(ref GraphicsDeviceManager gdm, ref SpriteBatch sb, ref IsoRenderContext renderContext, Rectangle actualRect)
         {
-            bounds.Height = GetTotalContentHeight();
-
             var children = GetChildren();
-            int fixedHeights = 0;
+            int fixedWidths = 0;
             int fillWeights = 0;
 
             // calculate how much space is taken by fixed items
@@ -35,9 +20,9 @@ namespace Iso.Engine.Core.UI.Elements
                 if (children[i].visibility == UIVisibilityMode.COLLAPSED) continue;
 
                 // If anchors are 0, it's fixed size
-                if (children[i].anchorMin.Y == children[i].anchorMax.Y)
+                if (children[i].anchorMin.X == children[i].anchorMax.X)
                 {
-                    fixedHeights += children[i].bounds.Height + spacing;
+                    fixedWidths += children[i].bounds.Width + spacing;
                 }
                 else
                 {
@@ -45,35 +30,35 @@ namespace Iso.Engine.Core.UI.Elements
                 }
             }
 
-            int remainingSpace = actualRect.Height - fixedHeights;
-            int heightPerFillItem = fillWeights > 0 ? remainingSpace / fillWeights : 0;
+            int remainingSpace = actualRect.Width - fixedWidths;
+            int widthPerFillItem = fillWeights > 0 ? remainingSpace / fillWeights : 0;
 
             // render
-            int currentYOffset = 0;
+            int currentXOffset = 0;
             for (int i = 0; i < children.Count; i++)
             {
                 UIElement child = children[i];
                 if (child.visibility == UIVisibilityMode.COLLAPSED) continue;
 
-                int calculatedHeight;
-                if (child.anchorMin.Y == child.anchorMax.Y)
+                int calculatedWidth;
+                if (child.anchorMin.X == child.anchorMax.X)
                 {
-                    calculatedHeight = child.bounds.Height; // Use fixed
+                    calculatedWidth = child.bounds.Width; // Use fixed
                 }
                 else
                 {
-                    calculatedHeight = heightPerFillItem;   // Use the shared fill width
+                    calculatedWidth = widthPerFillItem;   // Use the shared fill width
                 }
 
                 Rectangle childSlot = new Rectangle(
-                    actualRect.X,
-                    actualRect.Y + currentYOffset,
-                    actualRect.Width,
-                    calculatedHeight
+                    actualRect.X + currentXOffset,
+                    actualRect.Y,
+                    calculatedWidth,
+                    actualRect.Height
                 );
 
                 child.Render(ref gdm, ref sb, ref renderContext, childSlot);
-                currentYOffset += calculatedHeight + spacing;
+                currentXOffset += calculatedWidth + spacing;
             }
         }
     }

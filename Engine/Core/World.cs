@@ -71,7 +71,7 @@ namespace Iso.Engine.Core
 
         public virtual void Update(double deltaTime)
         {
-            
+            uiRenderer.Update(deltaTime);
         }
     }
 }

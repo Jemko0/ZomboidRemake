@@ -16,8 +16,6 @@ namespace Iso.Engine.Core.UI.Elements
 
         protected override void UIRender(ref GraphicsDeviceManager gdm, ref SpriteBatch sb, ref IsoRenderContext renderContext, Rectangle actualRect)
         {
-            base.UIRender(ref gdm, ref sb, ref renderContext, actualRect);
-
             for (int i = 0; i < children.Count; i++)
             {
                 UIElement child = children[i];

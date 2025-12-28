@@ -13,6 +13,11 @@ namespace Iso.Engine.Core.UI.Elements
 
         public override List<UIElement> GetChildren()
         {
+            if(child == null)
+            {
+                return new List<UIElement>();
+            }
+
             return new List<UIElement> { child };
         }
 

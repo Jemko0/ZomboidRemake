@@ -113,7 +113,9 @@ namespace Iso.Engine.Core.Tiles
             float halfHeight = viewport.Height / (2f * zoom);
 
             Matrix projection = Matrix.CreateOrthographicOffCenter(-halfWidth, halfWidth, halfHeight, -halfHeight, 0.0f, 1.0f);
+
             Matrix view = camera.viewMatrix;
+
             Matrix wvp = view * projection;
 
             singleTileShader.Parameters["WorldViewProjection"].SetValue(wvp);

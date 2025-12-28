@@ -1,4 +1,5 @@
 ﻿using Iso.Engine.Core.Interfaces;
+using Iso.Engine.Core.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using SharpDX.Direct3D9;
@@ -68,10 +69,21 @@ namespace Iso.Engine.Core
             Mappings.Update();
         }
 
+        public static Point GetRawMousePosition()
+        {
+            return Mouse.GetState().Position;
+        }
+
+        public static Point GetLogicalMousePosition()
+        {
+            return UIRenderer.GetLogicalMouse(Mouse.GetState().Position);
+        }
+
         public void UpdateMouse()
         {
             Vector2 mousePositionThisFrame = Mouse.GetState().Position.ToVector2();
             float mouseWheelThisFrame = Mouse.GetState().ScrollWheelValue;
+
             ButtonState lmbThisFrame = Mouse.GetState().LeftButton;
             ButtonState mmbThisFrame = Mouse.GetState().MiddleButton;
             ButtonState rmbThisFrame = Mouse.GetState().RightButton;
@@ -86,7 +98,7 @@ namespace Iso.Engine.Core
 
             if (mouseWheelLastFrame != mouseWheelThisFrame)
             {
-                onMouseWheel?.Invoke(new MouseEventArgs(Vector2.Zero, mousePositionThisFrame, mouseWheelThisFrame));
+                onMouseWheel?.Invoke(new MouseEventArgs(Vector2.Zero, mousePositionThisFrame, mouseWheelLastFrame - mouseWheelThisFrame));
 
                 mouseWheelLastFrame = mouseWheelThisFrame;
             }
