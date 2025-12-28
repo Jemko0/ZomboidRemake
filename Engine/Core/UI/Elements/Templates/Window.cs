@@ -10,6 +10,13 @@ namespace Iso.Engine.Core.UI.Elements.Templates
 {
     public class Window : Panel
     {
+        public bool allowResizing = false;
+        public Window AllowResize()
+        {
+            allowResizing = true;
+            return this;
+        }
+
         public Window Create()
         {
             this.Attach(
@@ -60,13 +67,14 @@ namespace Iso.Engine.Core.UI.Elements.Templates
                                                         (
                                                             new TextBlock()
                                                                 .FillParent()
-                                                                .SetText("Close")
-                                                                .SetFontScale(0.5f)
+                                                                .SetText("X")
+                                                                .SetTint(Color.Black)
+                                                                .SetFontScale(0.75f)
                                                                 .SetFont(Fonts.monospace)
                                                                 .SetVerticalAlignment(VerticalAlignmentMode.CENTER)
                                                                 .SetJustification(TextJustificationMode.CENTER)
                                                         )
-                                                        .OnClick(() =>
+                                                        .OnReleased(() =>
                                                         {
                                                             this.Destroy();
                                                         })
@@ -96,13 +104,20 @@ namespace Iso.Engine.Core.UI.Elements.Templates
                                             )
                                     )
                             )
+                            .Attach
+                            (
+                                new Button()
+                                    .SetAnchor(new Vector2(1.0f, 1.0f), new Vector2(1.0f, 1.0f))
+                                    .OnClick(() => { isBeingResized = true; })
+                                    .OnReleased(() => { isBeingResized = false; })
+                            )
                     )
                 );
-
             return this;
         }
 
         public bool isBeingDragged = false;
+        public bool isBeingResized = false;
         private Point lastMousePos;
         protected override bool OnEventReceived(UIEvent eventName, Dictionary<string, object> data)
         {

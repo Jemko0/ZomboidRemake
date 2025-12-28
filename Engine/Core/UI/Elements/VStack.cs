@@ -29,23 +29,21 @@ namespace Iso.Engine.Core.UI.Elements
             int fixedHeights = 0;
             int fillWeights = 0;
 
-            // calculate how much space is taken by fixed items
             for (int i = 0; i < children.Count; i++)
             {
                 if (children[i].visibility == UIVisibilityMode.COLLAPSED) continue;
 
-                // If anchors are 0, it's fixed size
                 if (children[i].anchorMin.Y == children[i].anchorMax.Y)
                 {
                     fixedHeights += children[i].bounds.Height + spacing;
                 }
                 else
                 {
-                    fillWeights++; // its a fill item
+                    fillWeights++;
                 }
             }
 
-            int remainingSpace = actualRect.Height - fixedHeights;
+            int remainingSpace = actualRect.Height;
             int heightPerFillItem = fillWeights > 0 ? remainingSpace / fillWeights : 0;
 
             // render

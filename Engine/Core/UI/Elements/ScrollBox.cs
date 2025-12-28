@@ -51,10 +51,12 @@ namespace Iso.Engine.Core.UI.Elements
 
             child.Render(ref gdm, ref sb, ref renderContext, paddedContentRect);
 
+            /*
             DrawOutline(sb, actualRect, Color.Red, 2);
             DrawOutline(sb, paddedContentRect, Color.Orange, 2);
 
             sb.DrawString(Fonts.arial, string.Format("SO: {0} / MS: {1}", scrollOffset, maxScrollOffset), actualRect.Location.ToVector2(), Color.Red);
+            */
         }
 
         public override void OnDestroy()
@@ -127,7 +129,6 @@ namespace Iso.Engine.Core.UI.Elements
                         scrollOffset = clickRatio * maxScrollOffset;
                         return true;
                     }
-
                     return false;
 
                 case UIEvent.MOUSE_LMBRELEASE:
@@ -162,7 +163,6 @@ namespace Iso.Engine.Core.UI.Elements
                     }
                     return false;
             }
-
             return false;
         }
     }
