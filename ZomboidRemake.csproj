@@ -26,6 +26,10 @@
 	  <Folder Include="Content\shaders\" />
 	</ItemGroup>
 
+	<PropertyGroup>
+  		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
 	<Target Name="RestoreDotnetTools" BeforeTargets="CollectPackageReferences">
 		<Message Text="Restoring dotnet tools..." Importance="High" />
 		<Exec Command="dotnet tool restore" />

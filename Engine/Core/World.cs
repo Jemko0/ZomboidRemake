@@ -5,6 +5,7 @@ using Iso.Engine.Core.Rendering.DataStructures;
 using Iso.Engine.Core.Rendering;
 using Iso.Engine.Core.UI;
 using Microsoft.Xna.Framework;
+using Iso.Engine.Core.Components;
 
 namespace Iso.Engine.Core
 {
@@ -15,12 +16,14 @@ namespace Iso.Engine.Core
 
         public IsoCamera activeCamera;
         public IsoRenderContext isoRenderContext = null;
-
+        public IsoObjectManager objectManager = null;
         public UIRenderer uiRenderer = null!;
 
         public World()
         {
             SetupUIViewport();
+            objectManager = IsoObjectManager.Instance;
+            objectManager.Reset();
         }
 
         public void SetupUIViewport()
