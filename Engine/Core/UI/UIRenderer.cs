@@ -18,7 +18,7 @@ namespace Iso.Engine.Core.UI
         public static Panel root = null!;
 
         private float frameCounter = 0;
-        public float updateRate = 0.033f; //30 FPS
+        public float updateRate = 0.016f; //30 FPS
 
         public UIElement capturedElement = null;
 
@@ -41,15 +41,22 @@ namespace Iso.Engine.Core.UI
             SceneManager.GetInputManager().onMouseLeftRelease += (e) => { SendEventOnMouseLocation(UIEvent.MOUSE_LMBRELEASE, e); };
             SceneManager.GetInputManager().onMouseRightRelease += (e) => { SendEventOnMouseLocation(UIEvent.MOUSE_RMBRELEASE, e); };
 
-            SceneManager.GetInputManager().onMouseMove += (e) => { SendEventOnMouseLocation(UIEvent.MOUSE_MOVE, e); };
+            SceneManager.GetInputManager().onMouseMove += (e) => { OnMouseMove(e); };
             SceneManager.GetInputManager().onMouseWheel += (e) => { SendEventOnMouseLocation(UIEvent.MOUSE_WHEEL, e); };
+        }
+
+        private void OnMouseMove(MouseEventArgs e)
+        {
+            SendEventOnMouseLocation(UIEvent.MOUSE_MOVE, e);
         }
 
         private void SendEventOnMouseLocation(UIEvent eventName, MouseEventArgs e)
         {
             Point logicalMouse = GetLogicalMouse(e.position.ToPoint());
-
+            
             UIElement target = capturedElement ?? GetElementAt(root, logicalMouse);
+
+            Mouse.SetCursor(target == null ? MouseCursor.Arrow : target.cursor);
 
             if (target == null) return;
 
@@ -72,7 +79,7 @@ namespace Iso.Engine.Core.UI
         {
             if (parent == null) return null;
 
-            if (parent.visibility == UIVisibilityMode.HIDDEN || parent.visibility == UIVisibilityMode.COLLAPSED) return null;
+            if (parent.visibility == UIVisibilityMode.HIDDEN_NO_HIT_TEST || parent.visibility == UIVisibilityMode.COLLAPSED) return null;
 
             if (parent.clipChildren && !parent.GetAbsolouteBounds().Contains(mousePos))
             {
@@ -80,6 +87,7 @@ namespace Iso.Engine.Core.UI
             }
 
             var children = parent.GetChildren();
+
             if (children != null)
             {
                 for (int i = children.Count - 1; i >= 0; i--)
@@ -89,7 +97,7 @@ namespace Iso.Engine.Core.UI
                 }
             }
 
-            if (parent.visibility != UIVisibilityMode.VISIBLE) return null;
+            if (parent.visibility != UIVisibilityMode.VISIBLE && parent.visibility != UIVisibilityMode.HIDDEN) return null;
 
             if (parent.GetAbsolouteBounds().Contains(mousePos))
             {
@@ -200,6 +208,8 @@ namespace Iso.Engine.Core.UI
         {
             frameCounter += (float)deltaTime;
             root.Update(deltaTime);
+
+            //Mouse.SetCursor(capturedElement == null? MouseCursor.Arrow : capturedElement.cursor);
 
             ProcessDestruction();
         }

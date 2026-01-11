@@ -1,6 +1,7 @@
 ﻿using Iso.Engine.Core.DataStructures;
 using Iso.Engine.Core.UI.Elements;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using SharpDX.DXGI;
 using System.Runtime.CompilerServices;
 
@@ -12,6 +13,18 @@ namespace Iso.Engine.Core.UI.Extensions
         {
             var bounds = element.bounds;
             element.bounds = new Rectangle(bounds.X, bounds.Y, width, bounds.Height);
+            return element;
+        }
+
+        public static T SetVisibility<T>(this T element, UIVisibilityMode newVisibility) where T : UIElement
+        {
+            element.visibility = newVisibility;
+            return element;
+        }
+
+        public static T SetCursor<T>(this T element, MouseCursor newCursor) where T : UIElement
+        {
+            element.cursor = newCursor;
             return element;
         }
 
@@ -65,6 +78,13 @@ namespace Iso.Engine.Core.UI.Extensions
             element.anchorMax = max;
             return element;
         }
+
+        public static T SetPivot<T>(this T element, Vector2 newPivot) where T : UIElement
+        {
+            element.pivot = newPivot;
+            return element;
+        }
+
 
         public static T SetSize<T>(this T element, int width, int height) where T : UIElement
         {

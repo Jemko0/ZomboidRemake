@@ -18,9 +18,12 @@ namespace Iso.Engine.Core.UI.Elements
         public string name = "Unnamed Element";
         public Vector2 anchorMin = Vector2.Zero;
         public Vector2 anchorMax = Vector2.Zero;
+        public Vector2 pivot = Vector2.Zero;
         public UIElement parent = null;
         public UIVisibilityMode visibility = UIVisibilityMode.VISIBLE;
         public bool clipChildren = false;
+
+        public MouseCursor cursor = MouseCursor.Arrow;
 
         /// <summary>
         /// Use to free up any resources before this Element is removed from the Hierarchy
@@ -118,36 +121,39 @@ namespace Iso.Engine.Core.UI.Elements
 
         public Rectangle CalculateBounds(Rectangle parentRect)
         {
-            // Horizontal
-            int x1 = parentRect.X + (int)(parentRect.Width * anchorMin.X) + bounds.X;
-            int x2 = parentRect.X + (int)(parentRect.Width * anchorMax.X) - bounds.Width;
+            int anchorX = parentRect.X + (int)(parentRect.Width * anchorMin.X);
+            int anchorY = parentRect.Y + (int)(parentRect.Height * anchorMin.Y);
 
-            int finalW;
+            int finalX, finalY, finalW, finalH;
+
             if (anchorMin.X == anchorMax.X)
             {
-                finalW = bounds.Width; // Use fixed width
+                finalW = bounds.Width;
+                // Position = Anchor + Offset - (Pivot * Size)
+                finalX = anchorX + bounds.X - (int)(finalW * pivot.X);
             }
             else
             {
-                finalW = x2 - x1;      // stretch width
+                int x1 = anchorX + bounds.X;
+                int x2 = parentRect.X + (int)(parentRect.Width * anchorMax.X) - bounds.Width;
+                finalX = x1;
+                finalW = x2 - x1;
             }
-
-            // Vertical
-            int y1 = parentRect.Y + (int)(parentRect.Height * anchorMin.Y) + bounds.Y;
-            int y2 = parentRect.Y + (int)(parentRect.Height * anchorMax.Y) - bounds.Height;
-
-            int finalH;
 
             if (anchorMin.Y == anchorMax.Y)
             {
-                finalH = bounds.Height; // use fixed
+                finalH = bounds.Height;
+                finalY = anchorY + bounds.Y - (int)(finalH * pivot.Y);
             }
             else
             {
-                finalH = y2 - y1;       // stretch
+                int y1 = anchorY + bounds.Y;
+                int y2 = parentRect.Y + (int)(parentRect.Height * anchorMax.Y) - bounds.Height;
+                finalY = y1;
+                finalH = y2 - y1;
             }
 
-            return new Rectangle(x1, y1, finalW, finalH);
+            return new Rectangle(finalX, finalY, finalW, finalH);
         }
 
         public void Render(ref GraphicsDeviceManager gdm, ref SpriteBatch sb, ref IsoRenderContext renderContext, Rectangle parentRect)
@@ -156,7 +162,7 @@ namespace Iso.Engine.Core.UI.Elements
 
             absoluteBounds = CalculateBounds(parentRect);
 
-            if (visibility == UIVisibilityMode.HIDDEN) return;
+            if (visibility == UIVisibilityMode.HIDDEN || visibility == UIVisibilityMode.HIDDEN_NO_HIT_TEST) return;
 
             if(clipChildren)
             {

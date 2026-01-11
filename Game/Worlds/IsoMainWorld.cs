@@ -61,7 +61,7 @@ namespace Iso.Game.Worlds
             
             int fps = (int)Math.Clamp(1.0 / lastDelta, 0.0, double.MaxValue);
 
-            float scale = 3.0f;
+            float scale = 1.0f;
 
             sb.Begin(SpriteSortMode.Immediate);
             sb.DrawString(Fonts.monospace, string.Format("CX: {0} CY: {1}", currentChunkPos.x, currentChunkPos.y), new Vector2(100, 72), Color.Red, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0.0f);

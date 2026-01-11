@@ -4,6 +4,7 @@ using Iso.Engine.Core.Rendering;
 using Iso.Engine.Core.UI.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 
 namespace Iso.Engine.Core.UI.Elements.Templates
@@ -22,7 +23,7 @@ namespace Iso.Engine.Core.UI.Elements.Templates
             this.Attach(
                 new Wrapper()
                     .SetName("Window Main")
-                    .FillParent(0)
+                    .FillParent()
                     .SetBackground
                     (
                         new Image()
@@ -37,12 +38,12 @@ namespace Iso.Engine.Core.UI.Elements.Templates
                     (
                         new VStack()
                             .SetName("Window VStack")
-                            .FillParent(0)
+                            .FillParent()
                             .Attach
                             (
                                 new WindowTitleBar()
                                         .SetName("Title Bar")
-                                        .FillWidth(0)
+                                        .FillWidth()
                                         .SetHeight(24)
                                         .SetBackground(
                                             new Image()
@@ -56,7 +57,14 @@ namespace Iso.Engine.Core.UI.Elements.Templates
                                                 .FillParent()
                                                 .Attach
                                                 (
-                                                    new Spacer().FillParent(0)
+                                                    new TextBlock()
+                                                        .SetName("Title Text Block")
+                                                        .SetText(name)
+                                                        .FillParent()
+                                                )
+                                                .Attach
+                                                (
+                                                    new Spacer().FillParent()
                                                 )
                                                 .Attach
                                                 (
@@ -76,7 +84,7 @@ namespace Iso.Engine.Core.UI.Elements.Templates
                                                         )
                                                         .OnReleased(() =>
                                                         {
-                                                            this.Destroy();
+                                                            Destroy();
                                                         })
                                                 )
                                         )
@@ -85,7 +93,7 @@ namespace Iso.Engine.Core.UI.Elements.Templates
                             (
                                 new ScrollBox()
                                     .SetName("Window Content")
-                                    .FillParent(0)
+                                    .FillParent()
                                     .SetChild
                                     (
                                         new VStack()
@@ -107,7 +115,11 @@ namespace Iso.Engine.Core.UI.Elements.Templates
                             .Attach
                             (
                                 new Button()
+                                    .SetName("Resize Button")
+                                    .SetVisibility(UIVisibilityMode.HIDDEN)
+                                    .SetCursor(MouseCursor.SizeNWSE)
                                     .SetAnchor(new Vector2(1.0f, 1.0f), new Vector2(1.0f, 1.0f))
+                                    .SetSize(16, 16)
                                     .OnClick(() => { isBeingResized = true; })
                                     .OnReleased(() => { isBeingResized = false; })
                             )
@@ -166,6 +178,19 @@ namespace Iso.Engine.Core.UI.Elements.Templates
         {
             base.OnDestroy();
             isBeingDragged = false;
+        }
+
+        public override void UIUpdate(double deltaTime)
+        {
+            if (isBeingResized)
+            {
+                Point mousePos = Input.GetLogicalMousePosition();
+
+                bounds.Width = mousePos.X - bounds.X;
+                bounds.Height =  mousePos.Y - bounds.Y;
+            }
+
+            base.UIUpdate(deltaTime);
         }
     }
 }

@@ -28,6 +28,7 @@
         VISIBLE,
         VISIBLE_NO_HIT_TEST,
         HIDDEN,
+        HIDDEN_NO_HIT_TEST,
         COLLAPSED
     }
 }
