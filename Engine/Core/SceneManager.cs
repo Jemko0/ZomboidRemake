@@ -2,6 +2,7 @@
 using Iso.Engine.Core.Logging;
 using Iso.Engine.Core.Rendering.DataStructures;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX.MediaFoundation.DirectX;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
@@ -40,12 +41,11 @@ namespace Iso.Engine.Core
             return loadedWorld;
         }
 
-        private void LoadPendingWorld()
+        private unsafe void LoadPendingWorld()
         {
-            World _ = pendingWorld;
+            World pending = pendingWorld;
             pendingWorld = null;
-            loadedWorld = _;
-
+            loadedWorld = pending;
             loadedWorld.Init();
 
 
