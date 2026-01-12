@@ -25,10 +25,25 @@ namespace Iso.Engine.Core.Logging
             string logMsg = string.Format("[{0}]: {1} : {2}", verbosity, category, message);
             System.Diagnostics.Debug.WriteLine(logMsg);
 
-            if (verbosity == ELogVerbosity.Fatal)
-            {
-                Debug.Assert(false, logMsg);
-            }
+            assertLog(verbosity, logMsg);
+        }
+
+        public static void Logf(string category, string format, ELogVerbosity? verbosity = ELogVerbosity.Log, params object[] args)
+        {
+            string userfmt = string.Format(format, args);
+            string logMsg = string.Format("[{0}]: {1} : {2}", verbosity, category, userfmt);
+
+            assertLog(verbosity, logMsg);   
+        }
+
+        private static void assertLog(ELogVerbosity? verbosity, string logMsg)
+        {
+            bool isValid = verbosity != null;
+            bool fatal = verbosity == ELogVerbosity.Fatal;
+
+            bool panic = isValid && !fatal;
+
+            Debug.Assert(panic, logMsg);
         }
     }
 }

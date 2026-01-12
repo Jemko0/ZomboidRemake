@@ -114,6 +114,18 @@ namespace Iso.Engine.Core.DataStructures
         }
     }
 
+    public struct FVector2
+    {
+        public float x;
+        public float y;
+
+        public FVector2(float x, float y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
     public struct IntVector2 : IEquatable<IntVector2>
     {
         public int x;
@@ -163,5 +175,27 @@ namespace Iso.Engine.Core.DataStructures
         {
             return new IntVector2(a.x - b.x, a.y - b.y);
         }
+    }
+
+    public struct FTransform
+    {
+        public FVector3 translation = new FVector3(0, 0, 0);
+        public FVector2 scale = new FVector2(1, 1);
+
+        public FTransform(){}
+        public FTransform(FVector3 translation, FVector2 scale)
+        {
+            this.translation = translation;
+            this.scale = scale;
+        }
+
+        public void Translate(float x, float y, float z)
+        {
+            translation.x += x;
+            translation.y += y;
+            translation.z += z;
+        }
+
+        public static FTransform Identity { get { return new FTransform(new FVector3(0, 0, 0), new FVector2(1, 1));}}
     }
 }

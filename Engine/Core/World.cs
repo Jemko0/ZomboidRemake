@@ -16,13 +16,13 @@ namespace Iso.Engine.Core
 
         public IsoCamera activeCamera;
         public IsoRenderContext isoRenderContext = null;
-        public IsoObjectManager objectManager = null;
+        public IsoEntityManager objectManager = null;
         public UIRenderer uiRenderer = null!;
 
         public World()
         {
             SetupUIViewport();
-            objectManager = IsoObjectManager.Instance;
+            objectManager = IsoEntityManager.Instance;
             objectManager.Reset();
         }
 
@@ -75,6 +75,7 @@ namespace Iso.Engine.Core
         public virtual void Update(double deltaTime)
         {
             uiRenderer.Update(deltaTime);
+            activeCamera?.Update(deltaTime);
         }
     }
 }

@@ -4,16 +4,16 @@ namespace Iso.Engine.Core.Components.IsoObjectComponents
 {
     public class IsoComponentTick
     {
-        public IsoComponentTick(Action<float> thisTickFunction) 
+        public IsoComponentTick(Action<double> thisTickFunction) 
         {
             tickFunction = thisTickFunction;
         }
 
         public bool canEverTick = true;
         public bool runtimeTickEnabled = true;
-        public Action<float> tickFunction = null;
+        public Action<double> tickFunction = null;
 
-        public void TickComponent(float delta)
+        public void TickComponent(double delta)
         {
             if(runtimeTickEnabled)
             {

@@ -16,6 +16,12 @@ namespace Iso.Engine.Core.DataStructures
         F_GRASS_01,
     }
 
+    public enum ETileDirection : byte
+    {
+        NORTH,
+        EAST,
+    }
+
     public class SquareTileData
     {
         public List<TileObject> objects;
@@ -44,11 +50,17 @@ namespace Iso.Engine.Core.DataStructures
     public class TileObject
     {
         public ETileType type;
-        public bool rotated = false;
+        public ETileDirection direction = ETileDirection.NORTH;
 
         public TileObject(ETileType type)
         {
             this.type = type;
+        }
+
+        public TileObject(ETileType type, ETileDirection direction)
+        {
+            this.type = type;
+            this.direction = direction;
         }
     }
 } 

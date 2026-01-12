@@ -35,7 +35,7 @@ namespace Iso.Engine.Core.Rendering
 
     public class TileRendering
     {
-        public static void AddTileQuad(TileVertex[] buffer, ref int index, int tx, int ty, float tileWidth, float tileHeight, ETileType type)
+        public static void AddTileQuad(TileVertex[] buffer, ref int index, int tx, int ty, float tileWidth, float tileHeight, ETileType type, bool flipH, bool flipV)
         {
             float x = (tx - ty) * (tileWidth / 2.0f);
             float y = (tx + ty) * (tileHeight / 2.0f);
@@ -47,15 +47,19 @@ namespace Iso.Engine.Core.Rendering
 
             float yOffset = textureHeight - tileHeight;
 
-            // First triangle
-            buffer[index++] = new TileVertex(new Vector3(x, y - yOffset, 0), new Vector2(0, 0), instanceData);
-            buffer[index++] = new TileVertex(new Vector3(x + textureWidth, y - yOffset, 0), new Vector2(1, 0), instanceData);
-            buffer[index++] = new TileVertex(new Vector3(x, y - yOffset + textureHeight, 0), new Vector2(0, 1), instanceData);
+            float u0 = flipH ? 1 : 0;
+            float u1 = flipH ? 0 : 1;
+            float v0 = flipV ? 1 : 0;
+            float v1 = flipV ? 0 : 1;
 
+            buffer[index++] = new TileVertex(new Vector3(x, y - yOffset, 0), new Vector2(u0, v0), instanceData);
+            buffer[index++] = new TileVertex(new Vector3(x + textureWidth, y - yOffset, 0), new Vector2(u1, v0), instanceData);
+            buffer[index++] = new TileVertex(new Vector3(x, y - yOffset + textureHeight, 0), new Vector2(u0, v1), instanceData);
+        
             // Second triangle
-            buffer[index++] = new TileVertex(new Vector3(x + textureWidth, y - yOffset, 0), new Vector2(1, 0), instanceData);
-            buffer[index++] = new TileVertex(new Vector3(x + textureWidth, y - yOffset + textureHeight, 0), new Vector2(1, 1), instanceData);
-            buffer[index++] = new TileVertex(new Vector3(x, y - yOffset + textureHeight, 0), new Vector2(0, 1), instanceData);
+            buffer[index++] = new TileVertex(new Vector3(x + textureWidth, y - yOffset, 0), new Vector2(u1, v0), instanceData);
+            buffer[index++] = new TileVertex(new Vector3(x + textureWidth, y - yOffset + textureHeight, 0), new Vector2(u1, v1), instanceData);
+            buffer[index++] = new TileVertex(new Vector3(x, y - yOffset + textureHeight, 0), new Vector2(u0, v1), instanceData);
         }
     }
 }

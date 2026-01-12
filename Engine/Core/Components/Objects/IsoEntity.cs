@@ -1,19 +1,43 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
 using Iso.Engine.Core.Components.IsoObjectComponents;
 using Iso.Engine.Core.Interfaces;
+using SharpDX.X3DAudio;
 
 namespace Iso.Engine.Core.Components
 {
-    public class IsoObject : IIsoUpdateable
+    public class IsoEntity : IIsoUpdateable
     {
-        private int objectID = 0;
+        public int objectID
+        {
+            protected get => objectID;
+            set
+            {
+                if(objectID == -1)
+                {
+                    objectID = value;
+                }
+                else
+                {
+                    throw new Exception("objectID cannot be set after initialization!");
+                }
+            }
+        }
         private IsoGuid guid;
-        private List<IsoObjectComponent> components;
+        private List<IsoObjectComponent> components = new List<IsoObjectComponent>();
 
-        public IsoObject(int oID)
+        public IsoEntity(int oID)
         {
             objectID = oID;
             guid = IsoGuidProvider.Instance.GenerateGUIDFromSeed(objectID);
+            InitWithDefaults();
+        }
+
+        public string GetEntityName()
+        {
+            return string.Format("{0}_{1}", ToString(), guid.ToString());
         }
 
         protected virtual void InitWithDefaults()
@@ -39,6 +63,11 @@ namespace Iso.Engine.Core.Components
         public List<IsoObjectComponent> GetComponents()
         {
             return components;
+        }
+
+        public T GetComponentByClass<T>() where T : IsoObjectComponent
+        {
+            return components.OfType<T>().FirstOrDefault();
         }
 
         public void AddComponent<T>() where T : IsoObjectComponent

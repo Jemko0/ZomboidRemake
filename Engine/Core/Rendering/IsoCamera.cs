@@ -1,16 +1,15 @@
-﻿using Iso.Engine.Core.DataStructures;
+﻿using Iso.Engine.Core.Components;
+using Iso.Engine.Core.Components.IsoObjectComponents;
+using Iso.Engine.Core.DataStructures;
+using Iso.Engine.Core.Interfaces;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Iso.Engine.Core.Rendering
 {
-    public class IsoCamera
+    public class IsoCamera : IIsoUpdateable
     {
         protected FVector3 position = new FVector3(0.0f, 0.0f, 0.0f);
+        protected IsoTransformComponent followTransform;
         protected float zoom = 1.0f;
 
         public Matrix viewMatrix;
@@ -63,6 +62,14 @@ namespace Iso.Engine.Core.Rendering
         public float GetZoom()
         {
             return zoom;
+        }
+
+        public void Update(double deltaTime)
+        {
+            if(followTransform == null) return;
+
+            FTransform targetTransform = followTransform.GetTransform();
+            position = targetTransform.translation;   
         }
     }
 }

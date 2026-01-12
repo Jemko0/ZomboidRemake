@@ -15,6 +15,22 @@ namespace Iso.Engine.Core.Components
         {
             this.guid = guid;
         }
+
+        public override string ToString()
+        {
+            string str = "";
+
+            for(int i = 0; i < guid.Length; i++)
+            {
+                str += "{" + guid[i] + "}";
+                if(i != guid.Length - 1)
+                {
+                    str += ":";
+                }
+            }
+            
+            return str;
+        }
     }
 
     public sealed class IsoGuidProvider

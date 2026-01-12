@@ -66,32 +66,38 @@ namespace Iso.Engine.Core.Tiles
 
         public void BasicFillWithTiles()
         {
+            ETileDirection dir;
+            ETileType type;
             for (int x = 0; x < CHUNKSIZE; x++)
             {
                 for (int y = 0; y < CHUNKSIZE; y++)
                 {
                     List<TileObject> t = new List<TileObject>();
 
-                    t.Add(new TileObject(ETileType.F_DEBUG));
+                    type = ETileType.F_DEBUG;
+                    dir = ETileDirection.NORTH;
 
                     if(Random.Shared.Next(100) >= 80)
                     {
-                        t.Add(new TileObject(ETileType.W_DEBUG));
+                        type = ETileType.W_DEBUG;
+                        if(Random.Shared.Next(100) >= 50)
+                        {
+                            dir = ETileDirection.EAST;
+                        }
+                    }
+                    
+                    TileObject o = new TileObject(type);
+                    o.direction = dir;
+
+                    if(type != ETileType.F_DEBUG)
+                    {
+                        t.Add(new TileObject(ETileType.F_DEBUG));
                     }
 
+                    t.Add(o);
                     SetTileAt(new IntVector3(x, y, 0), new SquareTileData(t));
                 }
             }
-        }
-
-        public void SingleTileWall()
-        {
-            List<TileObject> t = new List<TileObject>();
-
-            t.Add(new TileObject(ETileType.F_DEBUG));
-            t.Add(new TileObject(ETileType.W_DEBUG));
-
-            SetTileAt(new IntVector3(0, 0, 0), new SquareTileData(t));
         }
 
         public void MarkDirty()
@@ -125,7 +131,7 @@ namespace Iso.Engine.Core.Tiles
                             if (o == null) continue;
 
                             // Pass the CPU array
-                            TileRendering.AddTileQuad(cpuVertexBuffer, ref vertexCount, worldX, worldY, Tilemap.TILEWIDTH, Tilemap.TILEHEIGHT, o.type);
+                            TileRendering.AddTileQuad(cpuVertexBuffer, ref vertexCount, worldX, worldY, Tilemap.TILEWIDTH, Tilemap.TILEHEIGHT, o.type, o.direction == ETileDirection.EAST, false);
                         }
                     }
                 }
