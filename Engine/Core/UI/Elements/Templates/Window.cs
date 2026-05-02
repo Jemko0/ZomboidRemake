@@ -2,14 +2,16 @@
 using Iso.Engine.Core.DataStructures;
 using Iso.Engine.Core.Rendering;
 using Iso.Engine.Core.UI.Extensions;
+using Iso.Engine.Core.UI.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 
 namespace Iso.Engine.Core.UI.Elements.Templates
 {
-    public class Window : Panel
+    public class Window : Panel, IIsoUI
     {
         public bool allowResizing = false;
         public Window AllowResize()
@@ -18,7 +20,13 @@ namespace Iso.Engine.Core.UI.Elements.Templates
             return this;
         }
 
-        public Window Create()
+        public void OnNameSet(string newName)
+        {
+            TextBlock titleText = GetChildByName<TextBlock>("Title Text Block");
+            titleText.SetText(newName);
+        }
+
+        public Window()
         {
             this.Attach(
                 new Wrapper()
@@ -104,12 +112,6 @@ namespace Iso.Engine.Core.UI.Elements.Templates
                                                     .FillWidth()
                                                     .SetHeight(24)
                                             )
-                                            .Attach
-                                            (
-                                                new Button()
-                                                    .FillWidth()
-                                                    .SetHeight(2400)
-                                            )
                                     )
                             )
                             .Attach
@@ -125,7 +127,6 @@ namespace Iso.Engine.Core.UI.Elements.Templates
                             )
                     )
                 );
-            return this;
         }
 
         public bool isBeingDragged = false;
@@ -151,7 +152,7 @@ namespace Iso.Engine.Core.UI.Elements.Templates
                 return true;
             }
 
-            if(eventName == UIEvent.DRAG_STOP)
+            if (eventName == UIEvent.DRAG_STOP)
             {
                 isBeingDragged = false;
                 return true;
@@ -187,7 +188,7 @@ namespace Iso.Engine.Core.UI.Elements.Templates
                 Point mousePos = Input.GetLogicalMousePosition();
 
                 bounds.Width = mousePos.X - bounds.X;
-                bounds.Height =  mousePos.Y - bounds.Y;
+                bounds.Height = mousePos.Y - bounds.Y;
             }
 
             base.UIUpdate(deltaTime);

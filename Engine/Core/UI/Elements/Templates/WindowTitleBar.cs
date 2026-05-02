@@ -26,12 +26,12 @@ namespace Iso.Engine.Core.UI.Elements.Templates
 
         public void StartDrag(Dictionary<string, object> data)
         {
-            parent.parent.BubbleEvent(UIEvent.DRAG_START, data);
+            BubbleEvent(UIEvent.DRAG_START, data);
         }
 
         public void EndDrag(Dictionary<string, object> data)
         {
-            parent.parent.BubbleEvent(UIEvent.DRAG_STOP, data);
+            BubbleEvent(UIEvent.DRAG_STOP, data);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Iso.Engine.Core.Interfaces;
 using Iso.Engine.Core.Rendering.DataStructures;
+using Iso.Engine.Core.UI.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -8,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Iso.Engine.Core.UI.Elements
 {
-    public abstract class UIElement : IIsoUpdateable
+    public abstract class UIElement : IIsoUpdateable, IIsoUI
     {
         public UIElement() { }
 
@@ -35,7 +36,7 @@ namespace Iso.Engine.Core.UI.Elements
 
         public void Destroy(bool mark = true)
         {
-            if(mark)
+            if (mark)
             {
                 UIRenderer.MarkForDeletion(this);
             }
@@ -54,6 +55,8 @@ namespace Iso.Engine.Core.UI.Elements
             return absoluteBounds;
         }
 
+        private static List<UIElement> _baseChildren = new List<UIElement>();
+
         /// <summary>
         /// Returns the children of this element, on classes derived from <see cref="Panel"/> will return
         /// mutable List directly. On classes derived from <see cref="SingleChildElement"/> will return a NEW
@@ -62,17 +65,17 @@ namespace Iso.Engine.Core.UI.Elements
         /// <returns></returns>
         public virtual List<UIElement> GetChildren()
         {
-            return new List<UIElement>();
+            return _baseChildren;
         }
 
         public T GetData<T>(string name, Dictionary<string, object?> data)
         {
-            if(data == null)
+            if (data == null)
             {
                 return default;
             }
 
-            if(data[name] == null)
+            if (data[name] == null)
             {
                 return default;
             }
@@ -82,7 +85,7 @@ namespace Iso.Engine.Core.UI.Elements
 
         public void BubbleEvent(UIEvent eventName, Dictionary<string, object?> data = null)
         {
-            if(!OnEventReceived(eventName, data))
+            if (!OnEventReceived(eventName, data))
             {
                 parent?.BubbleEvent(eventName, data);
             }
@@ -164,7 +167,7 @@ namespace Iso.Engine.Core.UI.Elements
 
             if (visibility == UIVisibilityMode.HIDDEN || visibility == UIVisibilityMode.HIDDEN_NO_HIT_TEST) return;
 
-            if(clipChildren)
+            if (clipChildren)
             {
                 Rectangle oldScissor = gdm.GraphicsDevice.ScissorRectangle;
 
@@ -239,6 +242,72 @@ namespace Iso.Engine.Core.UI.Elements
         public virtual void UIUpdate(double deltaTime)
         {
             //Subclasses override for custom behaviour
+        }
+
+        public T GetChildByType<T>() where T : UIElement
+        {
+            foreach (UIElement child in GetChildren())
+            {
+                if (child is T match)
+                {
+                    return match;
+                }
+
+                T nested = child.GetChildByType<T>();
+                if (nested != null)
+                {
+                    return nested;
+                }
+            }
+            return null;
+        }
+
+        public T GetChildByName<T>(string name) where T : UIElement
+        {
+            foreach (UIElement child in GetChildren())
+            {
+                if (child is T match && child.name == name)
+                    return match;
+
+                T nested = child.GetChildByName<T>(name);
+                if (nested != null)
+                    return nested;
+            }
+            return null;
+        }
+
+        public List<T> GetChildrenByType<T>() where T : UIElement
+        {
+            List<T> results = new List<T>();
+
+            foreach (UIElement child in GetChildren())
+            {
+                if (child is T match)
+                {
+                    results.Add(match);
+                }
+
+                results.AddRange(child.GetChildrenByType<T>());
+            }
+
+            return results;
+        }
+
+        public List<T> GetChildrenByName<T>(string childName) where T : UIElement
+        {
+            List<T> results = new List<T>();
+
+            foreach (UIElement child in GetChildren())
+            {
+                if (child is T match && child.name == childName)
+                {
+                    results.Add(match);
+                }
+
+                results.AddRange(child.GetChildrenByName<T>(childName));
+            }
+
+            return results;
         }
     }
 }

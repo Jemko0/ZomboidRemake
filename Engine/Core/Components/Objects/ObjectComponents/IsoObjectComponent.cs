@@ -8,7 +8,7 @@ namespace Iso.Engine.Core.Components.IsoObjectComponents
         public IsoObjectComponent(IsoEntity Owner)
         {
             this.Owner = Owner;
-            tickComponent.tickFunction = UpdateComponent;
+            //tickComponent.tickFunction = UpdateComponent;
 
             IsoEntityManager.MakeNewTickComponent(ref tickComponent, ref tickComponent.tickFunction);
         }

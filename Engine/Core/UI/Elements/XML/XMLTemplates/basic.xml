@@ -1,0 +1,14 @@
+<window name="MainWindow" width="400" height="300">
+    <vstack fillparent="0">
+        <windowtitlebar name="title bar" width="fill" height="24" />
+        <scrollbox fillparent="0">
+            <vstack>
+                <button height="48" width="fill">Text Test</button>
+                <button height="48" width="fill">Text Test</button>
+                <button height="48" width="fill">Text Test</button>
+                <button height="48" width="fill">Text Test</button>
+                <button height="48" width="fill">Text Test</button>
+            </vstack>
+        </scrollbox>
+    </vstack>
+</window>

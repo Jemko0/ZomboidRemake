@@ -5,10 +5,12 @@ using Iso.Engine.Core.Rendering;
 using Iso.Engine.Core.Rendering.DataStructures;
 using Iso.Engine.Core.Tiles;
 using Iso.Engine.Core.UI.Elements.Templates;
+using Iso.Engine.Core.UI.Elements.XML;
 using Iso.Engine.Core.UI.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.IO;
 
 namespace Iso.Game.Worlds
 {
@@ -32,7 +34,6 @@ namespace Iso.Game.Worlds
                     .SetPosition(new IntVector2(150, 150))
                     .SetWidth(720)
                     .SetHeight(480)
-                    .Create()
             );
         }
 
@@ -58,7 +59,7 @@ namespace Iso.Game.Worlds
             base.Render(ref gdm, ref sb);
 
             IntVector2 currentChunkPos = TileChunk.WorldToChunkPosition(activeCamera.GetPosition());
-            
+
             int fps = (int)Math.Clamp(1.0 / lastDelta, 0.0, double.MaxValue);
 
             float scale = 1.0f;

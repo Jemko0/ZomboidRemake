@@ -1,5 +1,6 @@
 ﻿using Iso.Engine.Core.DataStructures;
 using Iso.Engine.Core.UI.Elements;
+using Iso.Engine.Core.UI.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using SharpDX.DXGI;
@@ -209,6 +210,7 @@ namespace Iso.Engine.Core.UI.Extensions
         public static T SetName<T>(this T element, string name) where T : UIElement
         {
             element.name = name;
+            ((IIsoUI)element)?.OnNameSet(name);
             return element;
         }
 

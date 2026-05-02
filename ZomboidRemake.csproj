@@ -21,6 +21,13 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Engine/Core/UI/Elements/XML/XMLTemplates/**/*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Link>Assets/XML/XMLTemplates/%(RecursiveDir)%(Filename)%(Extension)</Link>
+		</Content>
+	</ItemGroup>
 	
 	<ItemGroup>
 	  <Folder Include="Content\shaders\" />
